@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from client_side_encryption.views import *
+from client_encryption.views import *
 
 urlpatterns = [
     path('', home_view, name='home'),
