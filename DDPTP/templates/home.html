@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content1 %}
+    <h1>hello world</h1>
+    {{request.user}}
+
+    <p>
+        {{ my_text|capfirst }}
+
+        <ul>
+            {% for item in my_list %}
+                {% if item == 1 %}
+                    <li>{{item|add:22}}</li>
+                {% else %}
+                    <li>{{item}}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </p>
+{% endblock %}

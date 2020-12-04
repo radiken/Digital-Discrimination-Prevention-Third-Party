@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from client_side_encryption.views import home_view
+from client_side_encryption.views import *
 
 urlpatterns = [
     path('', home_view, name='home'),
+    path('individual/', individual_detail_view),
+    path('submission/', individual_creation_view),
     path('admin/', admin.site.urls),
 ]
