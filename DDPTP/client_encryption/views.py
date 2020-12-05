@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from .models import Individual
 from .forms import *
+from .DP_library import *
 # Create your views here.
 
 def home_view(request, *args, **kwargs):
@@ -27,7 +28,9 @@ def individual_creation_view(request):
     if request.method == "POST":
         form = Submission_form(request.POST)
     if form.is_valid():
-        print(form.cleaned_data)
-        # Individual.objects.create(**form.cleaned_data)
+        plain_data = form.cleaned_data
+        plain_data['gender'] = k_random_response(plain_data['gender'], ['male', 'female'], 1)
+        # print(plain_data)
+        # Individual.objects.create(**plain_data)
     my_context = {'form': form}
     return render(request, "individual_creation.html", my_context)
