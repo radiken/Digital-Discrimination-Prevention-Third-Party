@@ -24,13 +24,14 @@ def individual_creation_view(request):
 	# if form.is_valid():
 	# 	form.save()
 	# 	form = Individual_creation_form()
+    result = ""
     form = Submission_form()
     if request.method == "POST":
-        form = Submission_form(request.POST)
+    	form = Submission_form(request.POST)
     if form.is_valid():
         plain_data = form.cleaned_data
         plain_data['gender'] = k_random_response(plain_data['gender'], ['male', 'female'], 1)
-        # print(plain_data)
+        result = plain_data
         # Individual.objects.create(**plain_data)
-    my_context = {'form': form}
+    my_context = {'form': form, 'result': result}
     return render(request, "individual_creation.html", my_context)
