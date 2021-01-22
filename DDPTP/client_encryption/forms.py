@@ -9,6 +9,6 @@ class Individual_creation_form(forms.ModelForm):
 
 class Submission_form(forms.Form):
     title = forms.CharField()
-    name = forms.CharField()
+    name = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Your name", "class": "name"}))
     gender = forms.CharField()
     age = forms.DecimalField()

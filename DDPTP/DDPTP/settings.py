@@ -83,11 +83,11 @@ DATABASES = {
     # }
     'default': { 
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'D7Y36XDVDl', 
-        'HOST': 'remotemysql.com', 
+        'NAME': 'DDPTP', 
+        'HOST': '144.202.4.81', 
         'PORT': 3306, 
-        'USER': 'D7Y36XDVDl',  
-        'PASSWORD': 'NwqDaKwYNx',
+        'USER': 'alan',  
+        'PASSWORD': 'Ykllcyy140224.',
     }  
 }
 
