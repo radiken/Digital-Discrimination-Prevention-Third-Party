@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'client_encryption',
+    'experiments',
+    'demo',
 ]
 
 MIDDLEWARE = [

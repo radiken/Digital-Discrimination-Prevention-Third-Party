@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from .models import Individual
 from .forms import *
-from .DP_library import *
+from DP_library import *
 # Create your views here.
 
 def home_view(request, *args, **kwargs):

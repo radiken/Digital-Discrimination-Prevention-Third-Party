@@ -1,0 +1,36 @@
+from django.db import models
+
+# Create your models here.
+class Adult_original(models.Model):
+    age = models.IntegerField()
+    workclass = models.CharField(max_length = 30)
+    fnlwgt = models.IntegerField()
+    education = models.CharField(max_length = 30)
+    education_num = models.IntegerField()
+    marital_status = models.CharField(max_length = 30)
+    occupation = models.CharField(max_length = 30)
+    relationship = models.CharField(max_length = 30)
+    race = models.CharField(max_length = 30)
+    sex = models.CharField(max_length = 30)
+    capital_gain = models.IntegerField()
+    capital_loss = models.IntegerField()
+    hours_per_week = models.IntegerField()
+    native_country = models.CharField(max_length = 30)
+    income = models.CharField(max_length = 30)
+
+class Adult_test(models.Model):
+    age = models.IntegerField()
+    workclass = models.CharField(max_length = 30)
+    fnlwgt = models.IntegerField()
+    education = models.CharField(max_length = 30)
+    education_num = models.IntegerField()
+    marital_status = models.CharField(max_length = 30)
+    occupation = models.CharField(max_length = 30)
+    relationship = models.CharField(max_length = 30)
+    race = models.CharField(max_length = 30)
+    sex = models.CharField(max_length = 30)
+    capital_gain = models.IntegerField()
+    capital_loss = models.IntegerField()
+    hours_per_week = models.IntegerField()
+    native_country = models.CharField(max_length = 30)
+    income = models.CharField(max_length = 30)
