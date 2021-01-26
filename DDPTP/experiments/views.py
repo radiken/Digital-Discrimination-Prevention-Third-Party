@@ -19,9 +19,10 @@ def prediction():
     return prediction_experiment(train_x, train_y, test_x, test_y)
 
 def prediction_experiment_view(request, *args, **kwargs):
-    score = prediction()
+    original_score, processed_score = prediction()
     my_context = {
-		'score': score
+		'original_score': original_score,
+        'processed_score': processed_score
 	}
     return render(request, "experiments\home.html", my_context)
 
