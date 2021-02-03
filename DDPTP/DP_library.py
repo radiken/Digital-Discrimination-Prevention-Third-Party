@@ -106,3 +106,17 @@ def optimized_unary_encoding(bit_array: np.ndarray, epsilon):
     p = 1 / 2
     q = 1 / (eps2p(epsilon) + 1)
     return random_response(bit_array, p, q)
+
+def get_laplace_noise(sensitivity,epsilon):
+    beta = sensitivity/epsilon
+    u1 = np.random.random()
+    u2 = np.random.random()
+    if u1 <= 0.5:
+        noise = -beta*np.log(1.-u2)
+    else:
+        noise = beta*np.log(u2)
+    return noise
+  
+def laplace(data,sensitivity,epsilon):
+    data += get_laplace_noise(sensitivity,epsilon)
+    return data
