@@ -17,14 +17,55 @@
     <div class="col-md-4">
         <h3 class="text-center">DDPTP Application</h3>
         <div class="text-center">
-            <h4>2. save and preserve sensitive data</h4>
             {% if submission_data != null %}
+                <h4>2. save and preserve sensitive data</h4>    
                 <p>age: {{ submission_data.age }}</p>
+                <p>non-sensitive data is sent to the organization automatically</p>
+            {% endif %}
+        </div>
+        <br>
+        <div class="text-center">
+            {% if result != null %}
+                <h4>5. verify fairness</h4>
+                <p>This is done when the result is at some scale, see example below</p>
             {% endif %}
         </div>
     </div>
     <div class="col-md-4">
         <h3 class="text-center">Organization</h3>
+        <div class="text-center">
+            {% if submission_data != null %}
+                <h4>3. run algorithm</h4>    
+                <p>age: {{submission_data.age}}, workclass: {{submission_data.workclass}}, fnlwgt: {{submission_data.fnlwgt}}, education num: {{submission_data.education}} </p>
+                <form method="POST" action="index"> {% csrf_token %}
+                    <input type="hidden" name="age" value={{submission_data.age}}>
+                    <input type="hidden" name="workclass" value={{submission_data.workclass}}>
+                    <input type="hidden" name="fnlwgt" value={{submission_data.fnlwgt}}>
+                    <input type="hidden" name="education" value={{submission_data.education}}>
+                    <input type="hidden" name="education_num" value= {{submission_data.education_num}}>
+                    <input type="hidden" name="marital_status" value={{submission_data.marital_status}}>
+                    <input type="hidden" name="occupation" value={{submission_data.occupation}}>
+                    <input type="hidden" name="relationship" value={{submission_data.relationship}}>
+                    <input type="hidden" name="race" value={{submission_data.race}}>
+                    <input type="hidden" name="sex" value={{submission_data.sex}}>
+                    <input type="hidden" name="capital_gain" value={{submission_data.capital_gain}}>
+                    <input type="hidden" name="capital_loss" value={{submission_data.capital_loss}}>
+                    <input type="hidden" name="hours_per_week" value={{submission_data.hours_per_week}}>
+                    <input type="hidden" name="native_country" value={{submission_data.native_country}}>
+                    <input type="submit" value="run" name="run_algorithm"/>
+                </form>
+                {% if result != null %}
+                    <p>result: {{result}}</p>
+                {% endif %}
+            {% endif %}
+        </div>
+        <br>
+        <div class="text-center">
+            {% if result != null %}
+                <h4>4. return result</h4>
+                <p>The result of the algorithm is sent to the application automatically</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 
