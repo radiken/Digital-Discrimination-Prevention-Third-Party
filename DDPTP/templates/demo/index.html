@@ -6,6 +6,7 @@
 <h1> Demo </h1>
 <h4> This is a process demonstration of the Digital Discrimination Prevention Third Party (DDPTP) model</h4>
 
+<h2 class="text-center">Demo 1</h2>
 <div class="row">
     <div class="col-md-4">
         <h3 class="text-center">Individual</h3>
@@ -19,7 +20,7 @@
         <div class="text-center">
             {% if submission_data != null %}
                 <h4>2. save and preserve sensitive data</h4>    
-                <p>age: {{ submission_data.age }}</p>
+                <p>marital status: {{ submission_data.marital_status }}, race: {{ submission_data.race }}, sex: {{ submission_data.sex }}, native country: {{submission_data.native_country}} </p>
                 <p>non-sensitive data is sent to the organization automatically</p>
             {% endif %}
         </div>
@@ -36,7 +37,7 @@
         <div class="text-center">
             {% if submission_data != null %}
                 <h4>3. run algorithm</h4>    
-                <p>age: {{submission_data.age}}, workclass: {{submission_data.workclass}}, fnlwgt: {{submission_data.fnlwgt}}, education num: {{submission_data.education}} </p>
+                <p>age: {{submission_data.age}}, workclass: {{submission_data.workclass}}, fnlwgt: {{submission_data.fnlwgt}}, education: {{submission_data.education}}, education num: {{submission_data.education_num}}, occupation: {{submission_data.occupation}}, relationship: {{submission_data.relationship}}, capital gain, {{submission_data.capital_gain}}, capital loss: {{submission_data.capital_loss}}, hours per week: {{submission_data.hours_per_week}} </p>
                 <form method="POST" action="index"> {% csrf_token %}
                     <input type="hidden" name="age" value={{submission_data.age}}>
                     <input type="hidden" name="workclass" value={{submission_data.workclass}}>
@@ -69,4 +70,21 @@
     </div>
 </div>
 
+<h2 class="text-center">Demo 2 (verification step demo)</h2>
+<div class="row" class="text-center">
+    <div class="col-md-6">
+        <h3 class="text-center">DDPTP Application</h3>
+        <div>
+            <h4>2. Verify</h4>
+            <p>Observer the sensitive data distribution in the decision set</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h3 class="text-center">Organization</h3>
+        <div>
+            <h4>1. Made a large set of decision</h4>
+            <p>The results are returned to the application</p>
+        </div>
+    </div>
+</div>
 </html>
