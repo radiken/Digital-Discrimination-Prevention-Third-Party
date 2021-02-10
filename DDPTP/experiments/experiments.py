@@ -12,33 +12,35 @@ This experiment use supervised learning classifiers to predict the income of ind
 '''
 def prediction_experiment(train_x, test_x, test_y):
     # preprocess data
-    train_x = pd.DataFrame(list(train_x))
+    # train_x = pd.DataFrame(list(train_x))
     test_x = pd.DataFrame(list(test_x))
     test_y = list(test_y)
 
     # handle missing values
     imp = SimpleImputer(missing_values="?", strategy="most_frequent")
-    train_x = pd.DataFrame(imp.fit_transform(train_x))
+    # train_x = pd.DataFrame(imp.fit_transform(train_x))
     test_x = pd.DataFrame(imp.fit_transform(test_x))
 
     # remove with gender(9th column), race(8th column) and marital status(5th column) for the processed data
-    processed_train_x = train_x.drop(columns=[5,8,9])
-    processed_test_x = test_x.drop(columns=[5,8,9])
+    # processed_train_x = train_x.drop(columns=[5,8,9])
+    processed_test_x = test_x.drop(columns=[5,8,9,13])
 
-    original_score = use_model(train_x, test_x, test_y, "original_model")
-    processed_score = use_model(processed_train_x, processed_test_x, test_y, "processed_model")
+    original_score = use_model(test_x, test_y, "original_model")
+    processed_score = use_model(processed_test_x, test_y, "processed_model")
 
     return original_score, processed_score
 
-def use_model(train_x, test_x, test_y, file_name):
+def use_model(test_x, test_y, file_name):
     # one hot encode
     # this function needs train_x to match the columns(features), a column is lost after one hot encoding
     le = preprocessing.LabelEncoder()
     test_y = le.fit_transform(test_y)
-    train_length = len(train_x)
-    merged_x = pd.concat([train_x, test_x], ignore_index=True)
-    merged_x = pd.get_dummies(merged_x)
-    test_x = merged_x.iloc[train_length:,:]
+    # train_length = len(train_x)
+    # merged_x = pd.concat([train_x, test_x], ignore_index=True)
+    # merged_x = pd.get_dummies(merged_x)
+    # test_x = merged_x.iloc[train_length:,:]
+    test_x = pd.get_dummies(test_x)
+    print(test_x)
 
     loaded_model = pickle.load(open(file_name, 'rb'))
     result = loaded_model.score(test_x, test_y)
@@ -56,12 +58,18 @@ def generate_prediction_experiment_model(train_x, train_y):
     # handle missing values
     imp = SimpleImputer(missing_values="?", strategy="most_frequent")
     train_x = pd.DataFrame(imp.fit_transform(train_x))
+    train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
+    # remove sensitive data for the processed data
+    processed_train_x = train_x.drop(columns=['marital_status', 'race', 'sex', 'native_country'])
 
-    # remove with gender(9th column), race(8th column) and marital status(5th column) for the processed data
-    processed_train_x = train_x.drop(columns=[5,8,9])
-
-    save_model(train_x, train_y, "original_model")
-    save_model(processed_train_x, train_y, "processed_model")
+    # one hot encode
+    le = preprocessing.LabelEncoder()
+    train_y = le.fit_transform(train_y)
+    train_x = pd.get_dummies(train_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
+    processed_train_x = pd.get_dummies(processed_train_x, columns=['workclass', 'education', 'occupation', 'relationship'])
+    
+    save_model(train_x, train_y, "original_decision_tree")
+    save_model(processed_train_x, train_y, "processed_decision_tree")
 
 
 '''
@@ -70,16 +78,6 @@ Train the sklearn decision tree classifier
 and save the model
 '''
 def save_model(train_x, train_y, file_name):
-    # one hot encode
-    le = preprocessing.LabelEncoder()
-    train_y = le.fit_transform(train_y)
-    test_y = le.fit_transform(test_y)
-    train_length = len(train_x)
-    merged_x = pd.concat([train_x, test_x], ignore_index=True)
-    merged_x = pd.get_dummies(merged_x)
-    train_x = merged_x.iloc[:train_length,:]
-    test_x = merged_x.iloc[train_length:,:]
-
     # train
     clf = tree.DecisionTreeClassifier()
     print('start training')
@@ -87,4 +85,4 @@ def save_model(train_x, train_y, file_name):
     print('finish training')
 
     # save model
-    pickle.dump(clf, open(file_name, 'wb'))
+    pickle.dump(clf, open('ml_models/'+file_name, 'wb'))
