@@ -10,15 +10,15 @@ This experiment use supervised learning classifiers to predict the income of ind
 '''
 def prediction():
     # train classifier with the original data
-    # train_x = Adult_original.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
-    # test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
-    # test_y = Adult_test.objects.values_list("income")
-
-    # return prediction_experiment(train_x, test_x, test_y)
-
     train_x = Adult_original.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
-    train_y = Adult_original.objects.values_list("income")
-    return generate_prediction_experiment_model(train_x, train_y)
+    test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+    test_y = Adult_test.objects.values_list("income")
+
+    return prediction_experiment(test_x, test_y)
+
+    # train_x = Adult_original.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+    # train_y = Adult_original.objects.values_list("income")
+    # return generate_prediction_experiment_model(train_x, train_y)
 
 def prediction_experiment_view(request, *args, **kwargs):
     original_score, processed_score = prediction()
