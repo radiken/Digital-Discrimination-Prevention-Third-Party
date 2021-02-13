@@ -1,9 +1,14 @@
 {% block content1 %}
     <h1>experiments</h1>
 
-    <p>
-        prediction experiment:
-        original score: {{ original_score }}
-        processed score: {{ processed_score }}
-    </p>
+    <div>
+        <h2>prediction experiment:</h2>
+        <h3>Statlog (German Credit Data) Data Set</h3>
+        original score: {{ statlog_original_score }}<br>
+        processed score: {{ statlog_processed_score }}
+
+        <h3>Adult Data Set</h3>
+        original score: {{ adult_original_score }}<br>
+        processed score: {{ adult_processed_score }}
+    </div>
 {% endblock %}

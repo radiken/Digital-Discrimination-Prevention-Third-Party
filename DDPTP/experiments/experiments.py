@@ -1,6 +1,7 @@
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn import preprocessing
 import pickle
@@ -10,19 +11,46 @@ Experiment 1
 Test whether excluding the sensitive data affect the effectiveness of the decision making algorithm
 This experiment use supervised learning classifiers to predict the income of individuals
 '''
-def prediction_experiment(test_x, test_y):
+def statlog_prediction_experiment(x, y):
+    x = pd.DataFrame(x)
+    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
+
+    # remove sensitive information in the processed training set
+    processed_x = x.drop(columns=["personal_status_and_sex", "age"])
+
+    # one hot encode
+    original_x = pd.get_dummies(x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    processed_x = pd.get_dummies(processed_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+
+    # the statlog dataset is small, no need to save and load model each time
+    original_train_x, original_test_x, original_train_y, original_test_y = train_test_split(original_x, list(y), test_size=0.33)
+    processed_train_x, processed_test_x, processed_train_y, processed_test_y = train_test_split(processed_x, list(y), test_size=0.33)
+
+    original_clf = tree.DecisionTreeClassifier()
+    original_clf.fit(original_train_x, original_train_y)
+    original_score = original_clf.score(original_test_x, original_test_y)
+
+    processed_clf = tree.DecisionTreeClassifier()
+    processed_clf.fit(processed_train_x, processed_train_y)
+    processed_score = processed_clf.score(processed_test_x, processed_test_y)
+
+    return original_score, processed_score
+    
+    
+
+def adult_prediction_experiment(test_x, test_y):
     # preprocess data
-    # train_x = pd.DataFrame(list(train_x))
     test_x = pd.DataFrame(list(test_x))
     test_y = list(test_y)
 
     # handle missing values
     imp = SimpleImputer(missing_values="?", strategy="most_frequent")
-    # train_x = pd.DataFrame(imp.fit_transform(train_x))
     test_x = pd.DataFrame(imp.fit_transform(test_x))
 
-    # remove with gender(9th column), race(8th column) and marital status(5th column) for the processed data
-    # processed_train_x = train_x.drop(columns=[5,8,9])
+    # remove with gender, race, native country and marital status for the processed data
     test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
     processed_test_x = test_x.drop(columns=['marital_status', 'race', 'sex', 'native_country'])
 
@@ -49,6 +77,8 @@ def use_model(test_x, test_y, file_name):
     params = loaded_model.get_params()
     result = loaded_model.score(test_x, test_y)
     return result
+
+
 
 '''
 USE WHEN THE MODEL IS NOT SAVED
