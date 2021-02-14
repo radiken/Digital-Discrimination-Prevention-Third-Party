@@ -26,8 +26,8 @@ def statlog_prediction_experiment(x, y):
         "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
 
     # the statlog dataset is small, no need to save and load model each time
-    original_train_x, original_test_x, original_train_y, original_test_y = train_test_split(original_x, list(y), test_size=0.33)
-    processed_train_x, processed_test_x, processed_train_y, processed_test_y = train_test_split(processed_x, list(y), test_size=0.33)
+    original_train_x, original_test_x, original_train_y, original_test_y = train_test_split(original_x, list(y), test_size=0.33, random_state=0)
+    processed_train_x, processed_test_x, processed_train_y, processed_test_y = train_test_split(processed_x, list(y), test_size=0.33, random_state=0)
 
     original_clf = tree.DecisionTreeClassifier()
     original_clf.fit(original_train_x, original_train_y)
@@ -53,12 +53,28 @@ def adult_prediction_experiment(test_x, test_y):
     # remove with gender, race, native country and marital status for the processed data
     test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
     processed_test_x = test_x.drop(columns=['marital_status', 'race', 'sex', 'native_country'])
+    # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and workclass(husband: husband-or-wife, wife: husband-or-wife)
+    abstracted_test_x = processed_test_x.copy()
+    for i in range(len(abstracted_test_x)):
+        age = abstracted_test_x.at[i, 'age']
+        if age <= 35:
+            abstracted_test_x.at[i, 'age'] = "young_age"
+        elif 36 <= age <= 55:
+            abstracted_test_x.at[i, 'age'] = "middle_age"
+        else:
+            abstracted_test_x.at[i, 'age'] = "older_age"
+
+        relationship = abstracted_test_x.at[i, 'relationship']
+        if relationship == 'Husband' or relationship == 'Wife':
+            abstracted_test_x.at[i, 'relationship'] = "Husband-or-wife"
 
     # one hot encode
     le = preprocessing.LabelEncoder()
     test_y = le.fit_transform(test_y)
     test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
     processed_test_x = pd.get_dummies(processed_test_x, columns=['workclass', 'education', 'occupation', 'relationship'])
+    abstracted_test_x = pd.get_dummies(abstracted_test_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
+    print(abstracted_test_x)
 
     # match columns(features)
     original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
@@ -69,16 +85,15 @@ def adult_prediction_experiment(test_x, test_y):
 
     original_score = use_model(test_x, test_y, "original_decision_tree")
     processed_score = use_model(processed_test_x, test_y, "processed_decision_tree")
+    abstracted_score = use_model(abstracted_test_x, test_y, "abstracted_decision_tree")
 
-    return original_score, processed_score
+    return original_score, processed_score, abstracted_score
 
 def use_model(test_x, test_y, file_name):
     loaded_model = pickle.load(open('ml_models/'+file_name, 'rb'))
     params = loaded_model.get_params()
     result = loaded_model.score(test_x, test_y)
     return result
-
-
 
 '''
 USE WHEN THE MODEL IS NOT SAVED
@@ -95,15 +110,31 @@ def generate_prediction_experiment_model(train_x, train_y):
     train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
     # remove sensitive data for the processed data
     processed_train_x = train_x.drop(columns=['marital_status', 'race', 'sex', 'native_country'])
+    # abstract age and relationship for abstracted data
+    abstracted_train_x = processed_train_x
+    for i in range(len(abstracted_train_x)):
+        age = abstracted_train_x.at[i, 'age']
+        if age <= 35:
+            abstracted_train_x.at[i, 'age'] = "young_age"
+        elif 36 <= age <= 55:
+            abstracted_train_x.at[i, 'age'] = "middle_age"
+        else:
+            abstracted_train_x.at[i, 'age'] = "older_age"
+
+        relationship = abstracted_train_x.at[i, 'relationship']
+        if relationship == 'Husband' or relationship == 'Wife':
+            abstracted_train_x.at[i, 'relationship'] = "Husband-or-wife"
 
     # one hot encode
     le = preprocessing.LabelEncoder()
     train_y = le.fit_transform(train_y)
     train_x = pd.get_dummies(train_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
     processed_train_x = pd.get_dummies(processed_train_x, columns=['workclass', 'education', 'occupation', 'relationship'])
-    
+    abstracted_train_x = pd.get_dummies(abstracted_train_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
+
     save_model(train_x, train_y, "original_decision_tree")
     save_model(processed_train_x, train_y, "processed_decision_tree")
+    save_model(abstracted_train_x, train_y, "abstracted_decision_tree")
 
 
 '''

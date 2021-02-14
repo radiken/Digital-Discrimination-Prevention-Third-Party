@@ -24,12 +24,13 @@ def adult_prediction():
 
 def prediction_experiment_view(request, *args, **kwargs):
     statlog_original_score, statlog_processed_score = statlog_prediction()
-    adult_original_score, adult_processed_score = adult_prediction()
+    adult_original_score, adult_processed_score, adult_abstracted_score = adult_prediction()
     my_context = {
 		'statlog_original_score': statlog_original_score,
         'statlog_processed_score': statlog_processed_score,
         'adult_original_score': adult_original_score,
-        'adult_processed_score': adult_processed_score
+        'adult_processed_score': adult_processed_score,
+        'adult_abstracted_score': adult_abstracted_score
 	}
     return render(request, "experiments\home.html", my_context)
 
