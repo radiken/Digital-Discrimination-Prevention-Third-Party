@@ -60,7 +60,8 @@ def experiments_view(request, *args, **kwargs):
         'e1_dataset1' : "Statlog (German Credit Data) Data Set",
         'e1_dataset2' : "Adult Data Set",
         'e1_dataset2_abstraction_description': "Apart from removing the sensitive data, abstraction is also an option. In this example we abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife).",
-        'e2_title': "2. Differential privacy experiment"
+        'e2_title': "2. Differential privacy experiment",
+        'e2_description': "This experiment demostrate the performance of adding noise to the results of numeric queries. Results of this experiment proves it is save to provide an API to the organization end to query information about the sensitive data."
     }
     my_context = {
 		'texts': texts

@@ -24,14 +24,16 @@
             original score: <span id="e1_d2_original_score"></span>
             <br>
             processed score: <span id="e1_d2_processed_score"></span>
-            {{ texts.e1_dataset2_abstraction_description }}
+            <br>
+            <h5>{{ texts.e1_dataset2_abstraction_description }}</h5>
             processed and abstracted score: <span id="e1_d2_abstracted_score"></span>
         </div>
     </div>
 
     <div>
         <h2>{{ texts.e2_title }}</h2>
-        
+        <p>{{ texts.e2_description }}</p>
+        <input class="form-control" id="e2_query" type="text" placeholder="Mysql query that returns numeric result">
     </div>
 
     <script>
@@ -61,7 +63,7 @@
             success: function(response) {
                 $('#e1_d2_original_score').text(response.adult_original_score);
                 $('#e1_d2_processed_score').text(response.adult_processed_score);
-                $('#e1_d2_abstracted_score').text(response.adult_processed_and_abstracted_score);
+                $('#e1_d2_abstracted_score').text(response.adult_abstracted_score);
                 $('#e1_d2_result').show();
             },
             error: function(rs, e) {
