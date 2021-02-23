@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 
-{% block content1 %}
-    <h1>hello world</h1>
-    {{request.user}}
+{% block content %}
+    <h1>Digital Discrimination Prevention Model</h1>
+    <h4>Author: Zhuolun Li</h4>
 
-    <p>
-        {{ my_text|capfirst }}
+    <div>
+        This is a awesome model
+        <!-- {{ my_text|capfirst }}
 
         <ul>
             {% for item in my_list %}
@@ -15,6 +16,6 @@
                     <li>{{item}}</li>
                 {% endif %}
             {% endfor %}
-        </ul>
-    </p>
+        </ul> -->
+    </div>
 {% endblock %}

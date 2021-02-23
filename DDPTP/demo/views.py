@@ -19,7 +19,7 @@ def demo_index_view(request, *args, **kwargs):
         context = {"result": result, "submission_data": data}
     else:   
         context = {}
-    return render(request, "demo\index.html", context)
+    return render(request, "demo_index.html", context)
 
 def individual_submission_view(request, *args, **kwargs):
     result = ""
@@ -30,4 +30,4 @@ def individual_submission_view(request, *args, **kwargs):
         plain_data = form.cleaned_data
         result = plain_data
     context = {'form': form, 'result': result}
-    return render(request, "demo\submission.html", context)
+    return render(request, "submission.html", context)

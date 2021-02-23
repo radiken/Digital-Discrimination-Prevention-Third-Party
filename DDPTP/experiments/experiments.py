@@ -53,7 +53,7 @@ def adult_prediction_experiment(test_x, test_y):
     # remove with gender, race, native country and marital status for the processed data
     test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
     processed_test_x = test_x.drop(columns=['marital_status', 'race', 'sex', 'native_country'])
-    # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and workclass(husband: husband-or-wife, wife: husband-or-wife)
+    # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife)
     abstracted_test_x = processed_test_x.copy()
     for i in range(len(abstracted_test_x)):
         age = abstracted_test_x.at[i, 'age']
@@ -74,7 +74,6 @@ def adult_prediction_experiment(test_x, test_y):
     test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
     processed_test_x = pd.get_dummies(processed_test_x, columns=['workclass', 'education', 'occupation', 'relationship'])
     abstracted_test_x = pd.get_dummies(abstracted_test_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
-    print(abstracted_test_x)
 
     # match columns(features)
     original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
@@ -91,7 +90,6 @@ def adult_prediction_experiment(test_x, test_y):
 
 def use_model(test_x, test_y, file_name):
     loaded_model = pickle.load(open('ml_models/'+file_name, 'rb'))
-    params = loaded_model.get_params()
     result = loaded_model.score(test_x, test_y)
     return result
 

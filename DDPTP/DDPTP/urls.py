@@ -26,7 +26,8 @@ urlpatterns = [
     path('submission/', individual_creation_view),
     path('admin/', admin.site.urls),
 
-    path('experiments/', prediction_experiment_view),
+    path('experiments/', experiments_view),
+    path('experiments/run', run_experiments),
 
     path('demo/index', demo_index_view),
     path('demo/submission', individual_submission_view),

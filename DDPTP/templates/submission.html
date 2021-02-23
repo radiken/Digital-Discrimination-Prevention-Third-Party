@@ -1,4 +1,4 @@
-{% block content1 %}
+{% block content %}
     <form method="POST" action="index"> {% csrf_token %}
         {{form.as_p}}
         <input type="submit" value="save" name="submission"/>
