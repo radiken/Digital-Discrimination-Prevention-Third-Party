@@ -117,6 +117,6 @@ def get_laplace_noise(sensitivity,epsilon):
         noise = beta*np.log(u2)
     return noise
   
-def laplace(data,sensitivity,epsilon):
-    data += get_laplace_noise(sensitivity,epsilon)
+def laplace(data,sensitivity=1,epsilon=1):
+    data = float(data)+get_laplace_noise(sensitivity,epsilon)
     return data

@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn import preprocessing
 import pickle
+from DP_library import laplace
 
 '''
 Experiment 1
@@ -92,6 +93,16 @@ def use_model(test_x, test_y, file_name):
     loaded_model = pickle.load(open('ml_models/'+file_name, 'rb'))
     result = loaded_model.score(test_x, test_y)
     return result
+
+'''
+Experiment 2
+Test the performance of differential privacy
+'''
+def get_dp_result(result, sensitivity=1, epsilon=1):
+    return laplace(result, sensitivity=sensitivity, epsilon=epsilon)
+
+
+# ---------------- functions to create models ---------------------
 
 '''
 USE WHEN THE MODEL IS NOT SAVED
