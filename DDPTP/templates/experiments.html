@@ -1,44 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container">
+    <br>
     <h1>experiments</h1>
-
-    <div>
+    <br>
+    <div id="e1">
 
         <h2>{{ texts.e1_title }}</h2>
         <p>{{ texts.e1_description }}</p>
         <div class="inline-headers">
-            <span class="h3 d-inline">{{ texts.e1_dataset1 }}</span> 
+            <span>{{ texts.e1_dataset1 }}</span> 
             <input class="d-inline" type="button" id="run_e1_d1" name="run_e1_d1" value="run model" />
         </div>
         <div id="e1_d1_result" style="display: none;">
-            original score: <span id="e1_d1_original_score"></span>
+            <span>{{ texts.e1_d1_description1 }}</span> 
             <br>
-            processed score: <span id="e1_d1_processed_score"></span>
+            score: <span id="e1_d1_original_score"></span>
+            <br>
+            <span>{{ texts.e1_d1_description2 }}</span> 
+            <br>
+            score: <span id="e1_d1_processed_score"></span>
         </div>
-        
+        <br>
         <div class="inline-headers">
-            <span class="h3 d-inline">{{ texts.e1_dataset2 }}</span> 
+            <span>{{ texts.e1_dataset2 }}</span> 
             <input class="d-inline" type="button" id="run_e1_d2" name="run_e1_d2" value="run model" />
         </div>
         <div id="e1_d2_result" style="display: none;">
-            original score: <span id="e1_d2_original_score"></span>
+            <span>{{ texts.e1_d2_description1 }}</span>
             <br>
-            processed score: <span id="e1_d2_processed_score"></span>
+            score: <span id="e1_d2_original_score"></span>
             <br>
-            <h5>{{ texts.e1_dataset2_abstraction_description }}</h5>
+            <span>{{ texts.e1_d2_description2 }}</span> 
+            <br>
+            score: <span id="e1_d2_processed_score"></span>
+            <br>
+            <span>{{ texts.e1_dataset2_abstraction_description }}</span>
+            <br>
             processed and abstracted score: <span id="e1_d2_abstracted_score"></span>
         </div>
     </div>
-
-    <div>
+    <hr/>
+    <div id="e2">
         <h2>{{ texts.e2_title }}</h2>
         <p>{{ texts.e2_description }}</p>
-        <!-- <input class="form-control" id="e2_query" type="text" placeholder="Mysql query that returns numeric result"> -->
-        <div class="inline-headers">
+        <div id="e2_t1">
             <span class="h3 d-inline">{{ texts.e2_t1_title }}</span>
             <p>{{ texts.e2_t1_description }}</p>
-        </div>
-        <div id="e2_t1">
             <h4>{{ texts.e2_t1_subtitle1 }}</h4>
             <div id="e2_t1_q1">
                 <span>{{ texts.e2_t1_q1_description }}</span>
@@ -67,11 +75,10 @@
             <div id="e2_t1_c12" style="display: none;">
                 <span>{{ texts.e2_t1_description2 }}</span>
                 <input class="d-inline" type="button" id="run_e2_t1_c1" name="run_e2_t1_c1" value="compute" />
-                <span id="e2_t1_c1_result"></span>
-                <br>
+                <p id="e2_t1_c1_result"></p>
                 <span>{{ texts.e2_t1_description3 }}</span>
                 <input class="d-inline" type="button" id="run_e2_t1_c2" name="run_e2_t1_c2" value="compute" />
-                <span id="e2_t1_c2_result"></span>
+                <p id="e2_t1_c2_result"></p>
             </div>
             <h4>{{ texts.e2_t1_subtitle2 }}</h4>
             <div id="e2_t1_q3">
@@ -101,14 +108,57 @@
             <div id="e2_t1_c34" style="display: none;">
                 <span>{{ texts.e2_t1_description2 }}</span>
                 <input class="d-inline" type="button" id="run_e2_t1_c3" name="run_e2_t1_c3" value="compute" />
-                <span id="e2_t1_c3_result"></span>
-                <br>
+                <p id="e2_t1_c3_result"></p>
                 <span>{{ texts.e2_t1_description3 }}</span>
                 <input class="d-inline" type="button" id="run_e2_t1_c4" name="run_e2_t1_c4" value="compute" />
-                <span id="e2_t1_c4_result"></span>
+                <p id="e2_t1_c4_result"></p>
+            </div>
+            <h4>{{ texts.e2_t1_subtitle3 }}</h4>
+            <div id="e2_t1_q5">
+                <span>{{ texts.e2_t1_q5_description }}</span>
+                <input class="d-inline" type="button" id="run_e2_t1_q5" name="run_e2_t1_q5" value="run query" />
+                <div id="e2_t1_q5_result" style="display: none;">
+                    result (processed by DP algorithm): <span id="e2_t1_q5_processed_result"></span>
+                    <br>
+                    real result (not available to the organization): <span id="e2_t1_q5_original_result">****</span>
+                    <input class="d-inline" type="button" id="show_e2_t1_q5" name="show_e2_t1_q5" value="show" />
+                </div>
+            </div>
+            <div id="e2_t1_q6">
+                <span>{{ texts.e2_t1_q6_description }}</span>
+                <input class="d-inline" type="button" id="run_e2_t1_q6" name="run_e2_t1_q6" value="run query" />
+                <div id="e2_t1_q6_result" style="display: none;">
+                    result (processed by DP algorithm): <span id="e2_t1_q6_processed_result"></span>
+                    <br>
+                    real result (not available to the organization): <span id="e2_t1_q6_original_result">****</span>
+                    <input class="d-inline" type="button" id="show_e2_t1_q6" name="show_e2_t1_q6" value="show" />
+                </div>
+            </div>
+            <div id="e2_t1_c567" style="display: none;">
+                <span>{{ texts.e2_t1_description4 }}</span>
+                <input class="d-inline" type="button" id="run_e2_t1_c5" name="run_e2_t1_c5" value="guess" />
+                <p id="e2_t1_c5_result"></p>
+                <span>{{ texts.e2_t1_description5 }}</span>
+                <input class="d-inline" type="button" id="run_e2_t1_c6" name="run_e2_t1_c6" value="run 1000 times" />
+                <p id="e2_t1_c6_result"></p>
+                <span>{{ texts.e2_t1_description6 }}</span>
+                <input class="d-inline" type="button" id="run_e2_t1_c7" name="run_e2_t1_c7" value="run 1000 times" />
+                <p id="e2_t1_c7_result"></p>
             </div>
         </div>
+        <div id="e2_t2">
+            <span class="h3 d-inline">{{ texts.e2_t2_title }}</span>
+            <p>{{ texts.e2_t2_description }}</p>
+            <span>{{ texts.e2_t2_c1_description }}</span>
+            <input class="d-inline" type="button" id="run_e2_t2_c1" name="run_e2_t2_c1" value="compute" />
+            <span id="e2_t2_c1_result"></span>
+            <br>
+            <span>{{ texts.e2_t2_c2_description }}</span>
+            <input class="d-inline" type="button" id="run_e2_t2_c2" name="run_e2_t2_c2" value="compute" />
+            <span id="e2_t2_c2_result"></span>
+        </div>
     </div>
+</div>
 
     <script>
     $('#run_e1_d1').click(function(){
@@ -156,6 +206,10 @@
     e2_t1_q3_dp_result = NaN;
     e2_t1_q4_dp_result = NaN;
     new_count_small = NaN;
+    e2_t1_q5_original_result = NaN;
+    e2_t1_q6_original_result = NaN;
+    e2_t1_q5_dp_result = NaN;
+    e2_t1_q6_dp_result = NaN;
 
     $('#run_e2_t1_q1').click(function(){
         $.ajax({
@@ -274,7 +328,7 @@
     })
 
     $('#run_e2_t1_c4').click(function(){
-        result = e2_t1_q4_dp_result*new_count_small - e2_t1_q4_dp_result*(new_count_small-1);
+        result = e2_t1_q4_dp_result*new_count_small - e2_t1_q3_dp_result*(new_count_small-1);
         $('#e2_t1_c4_result').text(e2_t1_q4_dp_result+"*"+new_count_small+"-"+e2_t1_q3_dp_result+"*("+new_count_small+"-1) = "+result);
     })
 
@@ -298,6 +352,136 @@
             $('#e2_t1_q4_original_result').text("****");
             $('#show_e2_t1_q4').val("show");
         }
+    })
+
+    $('#run_e2_t1_q5').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/experiments/run",
+            data: {'action': 'run_e2_t1_q5', 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            dataType: "json",
+            success: function(response) {
+                e2_t1_q5_original_result = response.original_result;
+                e2_t1_q5_dp_result = response.dp_result;
+                $('#e2_t1_q5_count').text(response.count);
+                $('#e2_t1_q5_processed_result').text(response.dp_result);
+                $('#e2_t1_q5_result').show();
+            },
+            error: function(rs, e) {
+                alert(e);
+            }
+        }); 
+    })
+
+    $('#run_e2_t1_q6').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/experiments/run",
+            data: {'action': 'run_e2_t1_q6', 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            dataType: "json",
+            success: function(response) {
+                e2_t1_q6_original_result = response.original_result;
+                e2_t1_q6_dp_result = response.dp_result;
+                $('#e2_t1_q6_processed_result').text(response.dp_result);
+                $('#e2_t1_q6_result').show();
+                $('#e2_t1_c567').show();
+            },
+            error: function(rs, e) {
+                alert(e);
+            }
+        }); 
+    })
+
+    $('#show_e2_t1_q5').click(function(){
+        if($('#show_e2_t1_q5').val() == "show"){
+            $('#e2_t1_q5_original_result').text(e2_t1_q5_original_result);
+            $('#show_e2_t1_q5').val("hide");
+        }
+        else if($('#show_e2_t1_q5').val() == "hide"){
+            $('#e2_t1_q5_original_result').text("****");
+            $('#show_e2_t1_q5').val("show");
+        }
+    })
+
+    $('#show_e2_t1_q6').click(function(){
+        if($('#show_e2_t1_q6').val() == "show"){
+            $('#e2_t1_q6_original_result').text(e2_t1_q6_original_result);
+            $('#show_e2_t1_q6').val("hide");
+        }
+        else if($('#show_e2_t1_q6').val() == "hide"){
+            $('#e2_t1_q6_original_result').text("****");
+            $('#show_e2_t1_q6').val("show");
+        }
+    })
+
+    $('#run_e2_t1_c5').click(function(){
+        if(e2_t1_q6_dp_result>e2_t1_q5_dp_result){
+            result = "The new entry is a single male"
+        }
+        else{
+            result = "The new entry is not a single male"
+        }
+        $('#e2_t1_c5_result').text(result);
+    })
+
+    $('#run_e2_t1_c6').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/experiments/run",
+            data: {'action': 'run_e2_t1_c6', 'csrfmiddlewaretoken': '{{ csrf_token }}', 'real_result': e2_t1_q5_original_result, 'dp_result': e2_t1_q5_dp_result},
+            dataType: "json",
+            success: function(response) {
+                $('#e2_t1_c6_result').text("correct rate: "+response.correct_rate);
+            },
+            error: function(rs, e) {
+                alert(e);
+            }
+        }); 
+    })
+
+    $('#run_e2_t1_c7').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/experiments/run",
+            data: {'action': 'run_e2_t1_c7', 'csrfmiddlewaretoken': '{{ csrf_token }}', 'real_result': e2_t1_q5_original_result, 'dp_result': e2_t1_q5_dp_result},
+            dataType: "json",
+            success: function(response) {
+                $('#e2_t1_c7_result').text("correct rate: "+response.correct_rate);
+            },
+            error: function(rs, e) {
+                alert(e);
+            }
+        }); 
+    })
+
+    $('#run_e2_t2_c1').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/experiments/run",
+            data: {'action': 'run_e2_t2_c1', 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            dataType: "json",
+            success: function(response) {
+                $('#e2_t2_c1_result').text("noise sum: "+response.noise_sum);
+            },
+            error: function(rs, e) {
+                alert(e);
+            }
+        }); 
+    })
+
+    $('#run_e2_t2_c2').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/experiments/run",
+            data: {'action': 'run_e2_t2_c2', 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            dataType: "json",
+            success: function(response) {
+                $('#e2_t2_c2_result').text("noise sum: "+response.noise_sum);
+            },
+            error: function(rs, e) {
+                alert(e);
+            }
+        }); 
     })
     </script>
 {% endblock %}

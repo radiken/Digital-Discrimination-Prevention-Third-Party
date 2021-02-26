@@ -97,9 +97,16 @@ def use_model(test_x, test_y, file_name):
 '''
 Experiment 2
 Test the performance of differential privacy
+Functions related to data querying are in view.py
 '''
 def get_dp_result(result, sensitivity=1, epsilon=1):
     return laplace(result, sensitivity=sensitivity, epsilon=epsilon)
+
+def get_noise_n_times(n, epsilon=1):
+    noise_sum = 0
+    for _ in range(n):
+        noise_sum = noise_sum + get_dp_result(0, epsilon=epsilon)
+    return noise_sum
 
 
 # ---------------- functions to create models ---------------------
