@@ -29,5 +29,9 @@ def individual_submission_view(request, *args, **kwargs):
     if form.is_valid():
         plain_data = form.cleaned_data
         result = plain_data
-    context = {'form': form, 'result': result}
+    texts = {
+        'title': "A Company's Data Collection Form",
+        'description': "Your data will be collected through the DDPTP, we coperate with this company to ensure that you will be fairly treated by the company's decision-making algorithm. The information with the \"protected\" label will not be sent to the company."
+    }
+    context = {'form': form, 'result': result, 'texts': texts}
     return render(request, "submission.html", context)

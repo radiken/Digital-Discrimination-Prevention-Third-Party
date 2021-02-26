@@ -1,11 +1,33 @@
+{% extends 'base.html' %}
+{% load static %} 
 {% block content %}
+<div class="container" style="width: 900px;">
+    <br>
+    <h1>{{ texts.title }}</h1>
+    <br>
+    <p>{{ texts.description }}</p>
     <form method="POST" action="index"> {% csrf_token %}
         {{form.as_p}}
         <input type="submit" value="save" name="submission"/>
     </form>
+</div>
 
-    <br>
-    {% if result != "" %}
-        <script>alert("Submitted")</script>
-    {% endif %}
+
+{% if result != "" %}
+    <script>alert("Submitted")</script>
+{% endif %}
+
+
+
+<script>
+$("p").addClass("form-group");
+$("input").addClass("form-control");
+$("select").addClass("form-control");
+$("[name='submission']").addClass("btn btn-success");
+$("<span class='text-info'>(Protected) </span>").insertBefore("[for='id_marital_status']");
+$("<span class='text-info'>(Protected) </span>").insertBefore("[for='id_race']");
+$("<span class='text-info'>(Protected) </span>").insertBefore("[for='id_sex']");
+$("<span class='text-info'>(Protected) </span>").insertBefore("[for='id_native_country']");
+</script>
+
 {% endblock %}
