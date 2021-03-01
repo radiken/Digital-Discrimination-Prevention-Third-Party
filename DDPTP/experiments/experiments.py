@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn import preprocessing
 import pickle
 from DP_library import laplace
+import numpy as np
 
 '''
 Experiment 1
@@ -107,6 +108,14 @@ def get_noise_n_times(n, epsilon=1):
     for _ in range(n):
         noise_sum = noise_sum + get_dp_result(0, epsilon=epsilon)
     return noise_sum
+
+def epsilon_and_noise_chart_figures():
+    figures = []
+    # use epsilon = 1 as a standard, noise level = 1
+    for epsilon in np.arange(0.1, 10.0, 0.1):
+        figures.append([epsilon, 1/epsilon])
+    return figures
+
 
 
 # ---------------- functions to create models ---------------------

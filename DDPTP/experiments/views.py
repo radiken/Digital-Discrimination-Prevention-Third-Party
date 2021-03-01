@@ -61,12 +61,12 @@ def get_statlog_single_male_count(new_entry = None):
     dp_result = get_dp_result(original_result)
     return original_result, dp_result
 
-def simulate_new_entry_guess_n_times(n, real_result, dp_result, epsilon=1):
+def simulate_new_entry_guess_n_times(n, real_result, epsilon=1):
     correct_count = 0
     new_result = real_result+1
     for _ in range(n):
         new_dp_result = get_dp_result(new_result, epsilon=epsilon)
-        if new_dp_result > dp_result:
+        if new_dp_result > real_result:
             correct_count = correct_count + 1
     return correct_count/n
 
@@ -97,10 +97,10 @@ def run_experiments(request, *args, **kwargs):
             original_result, dp_result = get_statlog_single_male_count(new_entry = 1)
             ctx = {'original_result': original_result, 'dp_result': dp_result}
         elif request.POST.get("action")=="run_e2_t1_c6":
-            correct_rate = simulate_new_entry_guess_n_times(1000, int(request.POST.get("real_result")), float(request.POST.get("dp_result")))
+            correct_rate = simulate_new_entry_guess_n_times(1000, int(request.POST.get("real_result")))
             ctx = {'correct_rate': correct_rate}
         elif request.POST.get("action")=="run_e2_t1_c7":
-            correct_rate = simulate_new_entry_guess_n_times(1000, int(request.POST.get("real_result")), float(request.POST.get("dp_result")), epsilon=0.5)
+            correct_rate = simulate_new_entry_guess_n_times(1000, int(request.POST.get("real_result")), epsilon=0.5)
             ctx = {'correct_rate': correct_rate}
         elif request.POST.get("action")=="run_e2_t2_c1":
             noise_sum = get_noise_n_times(100000, epsilon=1)
@@ -118,7 +118,7 @@ def run_experiments(request, *args, **kwargs):
 def experiments_view(request, *args, **kwargs):
     texts = {
         'e1_title' : "1. Prediction experiment",
-        'e1_description' : "This experiment aims to prove that classifiers can have good performance without some sensitive input. We observe the result by controlling the inputs of decision tree classifiers on two real-world dataset.",
+        'e1_description' : "This experiment aims to prove that classifiers can have good performance without some sensitive input. We observe the result by controlling the inputs of decision tree classifiers on two real-world data set.",
         'e1_dataset1' : "Statlog (German Credit Data) Data Set",
         'e1_d1_description1': "Predict the test set with model that use all the information from inputs:",
         'e1_d1_description2': "Take out the information of \"age\", \"marital status and sex\":",
@@ -139,19 +139,22 @@ def experiments_view(request, *args, **kwargs):
         'e2_t1_q3_description': "Differential privacy works well with data set of 1000 entries, now consider a smaller data set. Only take the first 10 entries of the Statlog (German Credit Data) Data Set:",
         'e2_t1_q4_description': "add 11th entry with age 25 and run the query again:",
         'e2_t1_subtitle3': "\"How many\" queries:",
-        'e2_t1_q5_description': "This part tests the performance of differential privacy with queries that ask \"how many...\" questions, in this case the size of the data set does not matter, because no computation is necessary where the new entry can only affect the result by 0 or 1.",
+        'e2_t1_q5_description': "This part tests the performance of differential privacy with queries that ask \"how many...\" questions, in this case the size of the data set does not matter, because no computation is necessary where the new entry can only affect the result by 0 or 1. Suppose the organization is querying the number of single male in the data set:",
         'e2_t1_q6_description': "Suppose another entries comes in that satisfy the requirement (he is a single male):",
         'e2_t1_description4': "Base on the mechanism of laplace differential privacy, the best guess one can do is: if the second result is larger than the first result, the new entry satisfies the requirement, else it doesn't. Try to make a guess:",
         'e2_t1_description5': "Now with the information of the processed result, test the winning rate by running the above guess 1000 times:",
-        'e2_t1_description6': "The figure above is not ideal, the organization has a high probability of guessing the correct result. The way to improve this is to adjust the epsilon. The above computation use epsilon=1, choosing a smaller epsilon will increase the noise, run the test again with epsilon=0.5:",
+        'e2_t1_description6': "The above computation use epsilon=1, choosing a smaller epsilon will increase the noise, run the test again with epsilon=0.5:",
         'e2_t2_title': "Test 2: Multiple queries privacy level test",
         'e2_t2_description': "So far, individual's privacy seems to be safe, but there is one more things to test. The laplace machenism in differential privacy means the noise follows a laplace distribution, which means the expected noise is 0. If one makes the same queries many times, it is expected to have 0 noise when calculating the average.",
         'e2_t2_c1_description': "Run the differential privacy algorithm 100,000 times with epsilon=1 (applies in continuous return queries), only takes the noise and sum them up:",
         'e2_t2_c2_description': "Run 100,000 times with epsilon=2 (applies in \"how many\" question queries):",
         'e2_t2_conclusion': "It seems in reality this is not a problem."
     }
+    figures = epsilon_and_noise_chart_figures()
+    figures.insert(0, ["epsilon", "noise"])
     my_context = {
-		'texts': texts
+		'texts': texts,
+        'epsilon_and_noise': figures
 	}
     return render(request, "experiments.html", my_context)
 
