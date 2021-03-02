@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import experiments.experiments
 from .experiments import *
 from .models import Adult_original
 from .models import Adult_test
@@ -70,6 +71,15 @@ def simulate_new_entry_guess_n_times(n, real_result, epsilon=1):
             correct_count = correct_count + 1
     return correct_count/n
 
+'''
+Experiment 3: Verification experiment
+try to see if we can verify the fairness of the decision-making algorithms
+By looking at the distribution of the sensitive information in the returned classifications
+'''
+def get_adult_models_gender_rates_from_experiments():
+    test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+    return get_adult_models_gender_rates(test_x)
+
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
         if request.POST.get("action")=="run_e1_d1":
@@ -108,6 +118,10 @@ def run_experiments(request, *args, **kwargs):
         elif request.POST.get("action")=="run_e2_t2_c2":
             noise_sum = get_noise_n_times(100000, epsilon=2)
             ctx = {'noise_sum': noise_sum}
+        elif request.POST.get("action")=="run_e3_t1":
+            original_zero_male_rate, original_one_male_rate, processed_zero_male_rate, processed_one_male_rate, abstracted_zero_male_rate, abstracted_one_male_rate = get_adult_models_gender_rates_from_experiments()
+            ctx = {"original_zero_male_rate": original_zero_male_rate, "original_one_male_rate": original_one_male_rate, "processed_zero_male_rate": processed_zero_male_rate,
+                    "processed_one_male_rate": processed_one_male_rate, "abstracted_zero_male_rate": abstracted_zero_male_rate, "abstracted_one_male_rate": abstracted_one_male_rate}
         else:
             ctx = {}
         return HttpResponse(json.dumps(ctx), content_type='application/json')
@@ -128,6 +142,12 @@ def experiments_view(request, *args, **kwargs):
         'e1_dataset2_abstraction_description': "Apart from removing the sensitive data, abstraction is also an option. In this example, abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife), predict the test set again:",
         'e2_title': "2. Differential privacy experiment",
         'e2_description': "This experiment demostrate the performance of adding noise to the results of numeric queries. Results of this experiment proves it is save to provide an API to the organization end to query information about the sensitive data.",
+        'e2_charts_title': "Premise",
+        'e2_charts_description': '''Differential privacy is a tradeoff between privacy level(noise level) and data availability. The larger the noise is, the less accurate and meaningful the data is. 
+                                This application applies the laplace machanism, where the noise distribution obeys the laplace distribution as shown on the left below. We do not modify mu, hence we only look at the first three zero-centred line. 
+                                beta equals sensitivity/epsilon, under the definition of the laplace mechanism, sensitivity represents the change that a single entry can bring to the result. In this app, sensitivity is always set to 1, since in most case it satisfies the definition,
+                                moreover, it is sufficient and easier to control beta only through epsilon. Therefore, in this app, noise level equals to 1/epsilon. Thereby the chart on the right can be drawn showing the relationship between epsilon (x axis) and noise level (y axis).
+                                There is no standard about what noise level is too much, by intuition, this application considers epsilon=0.5, noise level=2 as the largest acceptable noise level (coresponds to the green line one the left).  ''',
         'e2_t1_title': "Test 1: Single query privacy level test",
         'e2_t1_subtitle1': "continuous return queries in a large data set",
         'e2_t1_description': "While providing an API to access certain level of the sensitive information, it is vital to ensure the result of the queries have high enough privacy level against differential attack.",
@@ -148,10 +168,13 @@ def experiments_view(request, *args, **kwargs):
         'e2_t2_description': "So far, individual's privacy seems to be safe, but there is one more things to test. The laplace machenism in differential privacy means the noise follows a laplace distribution, which means the expected noise is 0. If one makes the same queries many times, it is expected to have 0 noise when calculating the average.",
         'e2_t2_c1_description': "Run the differential privacy algorithm 100,000 times with epsilon=1 (applies in continuous return queries), only takes the noise and sum them up:",
         'e2_t2_c2_description': "Run 100,000 times with epsilon=2 (applies in \"how many\" question queries):",
-        'e2_t2_conclusion': "It seems in reality this is not a problem."
+        'e2_t2_conclusion': "It seems in reality this is not a problem.",
+        'e3_title': "3. Verification experiment",
+        'e3_description': "This application attempts to verify the fairness of the decision-making algorithms by observing the distribution of the sensitive information in the classification result. The intuition is, if too many entries with the same sensitive attribute are classified to a same catogory, the algorithm is suspected to have the knowledge of that sensitive information.",
+        'e3_t1_title': "Test 1: Whether the algorithm knows gender of the adult data set",
     }
-    figures = epsilon_and_noise_chart_figures()
-    figures.insert(0, ["epsilon", "noise"])
+    figures = epsilon_and_noise_level_chart_figures()
+    figures.insert(0, ["epsilon", "noise level"])
     my_context = {
 		'texts': texts,
         'epsilon_and_noise': figures
