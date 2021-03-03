@@ -111,9 +111,18 @@ $('#run_e2_t2_c2').click({action: "run_e2_t2_c2", csrf_token: $('#csrf_token').v
 }}, run_query);
 
 $('#run_e3_t1').click({action: "run_e3_t1", csrf_token: $('#csrf_token').val(), on_success: function(response) {
-    $('#e3_t1_result_original').text("In the model that use all the information as inputs: The rate of male in category 0 is "+response.original_zero_male_rate+", the rate of male in category 1 is "+response.original_one_male_rate+".");
-    $('#e3_t1_result_processed').text("In the model that takes out \"sex\", \"race\", \"native country\" and \"marital status\": The rate of male in category 0 is "+response.processed_zero_male_rate + ", the rate of male in category 1 is "+response.processed_one_male_rate+".");
-    $('#e3_t1_result_abstracted').text("In the model that takes out \"sex\", \"race\", \"native country\" and \"marital status\", also abstracts \"age\" and \"relationship\" as in experiment 1: The rate of male in category 0 is "+response.abstracted_zero_male_rate + ", the rate of male in category 1 is "+response.abstracted_one_male_rate+".");
+    $('#e3_t1_m1_marital_status').text("Category 0: \n"+response.original_zero_rates.marital_status+"\n Category 1: \n"+response.original_one_rates.marital_status);
+    $('#e3_t1_m1_sex').text("Category 0: \n"+response.original_zero_rates.sex+"\n Category 1: \n"+response.original_one_rates.sex);
+    $('#e3_t1_m1_race').text("Category 0: \n"+response.original_zero_rates.race+"\n Category 1: \n"+response.original_one_rates.race);
+    $('#e3_t1_m1_native_country').text("Category 0: \n"+response.original_zero_rates.native_country+"\n Category 1: \n"+response.original_one_rates.native_country);
+    $('#e3_t1_m2_marital_status').text("Category 0: \n"+response.processed_zero_rates.marital_status+"\n Category 1: \n"+response.processed_one_rates.marital_status);
+    $('#e3_t1_m2_sex').text("Category 0: \n"+response.processed_zero_rates.sex+"\n Category 1: \n"+response.processed_one_rates.sex);
+    $('#e3_t1_m2_race').text("Category 0: \n"+response.processed_zero_rates.race+"\n Category 1: \n"+response.processed_one_rates.race);
+    $('#e3_t1_m2_native_country').text("Category 0: \n"+response.processed_zero_rates.native_country+"\n Category 1: \n"+response.processed_one_rates.native_country);
+    $('#e3_t1_m3_marital_status').text("Category 0: \n"+response.abstracted_zero_rates.marital_status+"\n Category 1: \n"+response.abstracted_one_rates.marital_status);
+    $('#e3_t1_m3_sex').text("Category 0: \n"+response.abstracted_zero_rates.sex+"\n Category 1: \n"+response.abstracted_one_rates.sex);
+    $('#e3_t1_m3_race').text("Category 0: \n"+response.abstracted_zero_rates.race+"\n Category 1: \n"+response.abstracted_one_rates.race);
+    $('#e3_t1_m3_native_country').text("Category 0: \n"+response.abstracted_zero_rates.native_country+"\n Category 1: \n"+response.abstracted_one_rates.native_country);
 }}, run_query);
 
 $('#run_e2_t1_c1').click(function(){

@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
+<link rel="stylesheet" href="{% static '/css/experiment.css' %}">
+
 <div class="container">
     <br>
     <h1>experiments</h1>
@@ -155,6 +158,7 @@
                 <p id="e2_t1_c7_result"></p>
             </div>
         </div>
+        <br>
         <div id="e2_t2">
             <span class="h3 d-inline">{{ texts.e2_t2_title }}</span>
             <p>{{ texts.e2_t2_description }}</p>
@@ -167,18 +171,44 @@
             <span id="e2_t2_c2_result"></span>
         </div>
     </div>
+    <hr/>
     <div id="e3">
         <h2>{{ texts.e3_title }}</h2>
         <p>{{ texts.e3_description }}</p>
         <div id="e3_t1">
             <h3>{{ texts.e3_t1_title }}</h3>
+            <p>{{ texts.e3_t1_description }}</p>
             <input class="d-inline" type="button" id="run_e3_t1" name="run_e3_t1" value="run models" />
-            <br>
-            <span id="e3_t1_result_original"></span>
-            <br>
-            <span id="e3_t1_result_processed"></span>
-            <br>
-            <span id="e3_t1_result_abstracted"></span>
+            <table style="width:100%;">
+                <tr>
+                    <th>model</th>
+                    <th>marital status</th>
+                    <th>sex</th>
+                    <th>race</th>
+                    <th>native country</th>
+                </tr>
+                <tr>
+                    <td>model 1</td>
+                    <td id="e3_t1_m1_marital_status"></td>
+                    <td id="e3_t1_m1_sex"></td>
+                    <td id="e3_t1_m1_race"></td>
+                    <td id="e3_t1_m1_native_country"></td>
+                </tr>
+                <tr>
+                    <td>model 2</td>
+                    <td id="e3_t1_m2_marital_status"></td>
+                    <td id="e3_t1_m2_sex"></td>
+                    <td id="e3_t1_m2_race"></td>
+                    <td id="e3_t1_m2_native_country"></td>
+                </tr>
+                <tr>
+                    <td>model 3</td>
+                    <td id="e3_t1_m3_marital_status"></td>
+                    <td id="e3_t1_m3_sex"></td>
+                    <td id="e3_t1_m3_race"></td>
+                    <td id="e3_t1_m3_native_country"></td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
@@ -186,7 +216,6 @@
 <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
 
 <script type="text/javascript" src="{% static '/js/experiment.js' %}"></script>
-
 <script>
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);

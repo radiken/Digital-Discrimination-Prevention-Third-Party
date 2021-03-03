@@ -76,9 +76,18 @@ Experiment 3: Verification experiment
 try to see if we can verify the fairness of the decision-making algorithms
 By looking at the distribution of the sensitive information in the returned classifications
 '''
-def get_adult_models_gender_rates_from_experiments():
+def get_adult_models_sensitive_rates_from_experiments():
     test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
-    return get_adult_models_gender_rates(test_x)
+    original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates, abstracted_zero_rates, abstracted_one_rates = get_adult_models_sensitive_rates(test_x)
+    rates_list = [original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates, abstracted_zero_rates, abstracted_one_rates]
+    for rates in rates_list:
+        for key, value in rates.items():
+            value_string = ""
+            for attribute, rate in value.items():
+                if(rate!=0):
+                    value_string = value_string+attribute+": "+str(rate)+"\n"
+            rates[key] = value_string
+    return rates_list
 
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
@@ -119,9 +128,8 @@ def run_experiments(request, *args, **kwargs):
             noise_sum = get_noise_n_times(100000, epsilon=2)
             ctx = {'noise_sum': noise_sum}
         elif request.POST.get("action")=="run_e3_t1":
-            original_zero_male_rate, original_one_male_rate, processed_zero_male_rate, processed_one_male_rate, abstracted_zero_male_rate, abstracted_one_male_rate = get_adult_models_gender_rates_from_experiments()
-            ctx = {"original_zero_male_rate": original_zero_male_rate, "original_one_male_rate": original_one_male_rate, "processed_zero_male_rate": processed_zero_male_rate,
-                    "processed_one_male_rate": processed_one_male_rate, "abstracted_zero_male_rate": abstracted_zero_male_rate, "abstracted_one_male_rate": abstracted_one_male_rate}
+            rates_list = get_adult_models_sensitive_rates_from_experiments()
+            ctx = {"original_zero_rates": rates_list[0], "original_one_rates": rates_list[1], "processed_zero_rates": rates_list[2], "processed_one_rates": rates_list[3], "abstracted_zero_rates": rates_list[4], "abstracted_one_rates": rates_list[5]}
         else:
             ctx = {}
         return HttpResponse(json.dumps(ctx), content_type='application/json')
@@ -171,7 +179,8 @@ def experiments_view(request, *args, **kwargs):
         'e2_t2_conclusion': "It seems in reality this is not a problem.",
         'e3_title': "3. Verification experiment",
         'e3_description': "This application attempts to verify the fairness of the decision-making algorithms by observing the distribution of the sensitive information in the classification result. The intuition is, if too many entries with the same sensitive attribute are classified to a same catogory, the algorithm is suspected to have the knowledge of that sensitive information.",
-        'e3_t1_title': "Test 1: Whether the algorithm knows gender of the adult data set",
+        'e3_t1_title': "Test 1: sensitive data's distribution of the adult data set",
+        'e3_t1_description': "In experiment 1, three models were used to predict the test set: the original model that use all information (model 1), the processed model that removed some attributes (model 2), and the abstracted model that abstracted two features in addition to the processed model (model 3). This test compare the sensitive information distribution of the classifications of these models."
     }
     figures = epsilon_and_noise_level_chart_figures()
     figures.insert(0, ["epsilon", "noise level"])

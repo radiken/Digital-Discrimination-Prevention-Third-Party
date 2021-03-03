@@ -84,13 +84,13 @@ def adult_prediction_experiment(test_x, test_y):
         test_x[column] = 0
     test_x = test_x[original_columns]
 
-    original_score = use_model(test_x, test_y, "original_decision_tree")
-    processed_score = use_model(processed_test_x, test_y, "processed_decision_tree")
-    abstracted_score = use_model(abstracted_test_x, test_y, "abstracted_decision_tree")
+    original_score = load_model_and_score(test_x, test_y, "original_decision_tree")
+    processed_score = load_model_and_score(processed_test_x, test_y, "processed_decision_tree")
+    abstracted_score = load_model_and_score(abstracted_test_x, test_y, "abstracted_decision_tree")
 
     return original_score, processed_score, abstracted_score
 
-def use_model(test_x, test_y, file_name):
+def load_model_and_score(test_x, test_y, file_name):
     loaded_model = pickle.load(open('ml_models/'+file_name, 'rb'))
     result = loaded_model.score(test_x, test_y)
     return result
@@ -121,7 +121,7 @@ Experiment 3
 Test whether the app can verify the fairness of the algorithms
 Based on the distribution of the sensitive information in the classification
 '''
-def get_adult_models_gender_rates(test_x):
+def get_adult_models_sensitive_rates(test_x):
     # preprocess data
     test_x = pd.DataFrame(list(test_x))
 
@@ -159,26 +159,38 @@ def get_adult_models_gender_rates(test_x):
         original_test_x[column] = 0
     original_test_x = original_test_x[original_columns]
 
-    # get how many males and females in each catogory
-    original_zero_male_rate, original_one_male_rate = get_adult_model_result_gender_rate('original_decision_tree', test_x, original_test_x)
-    processed_zero_male_rate, processed_one_male_rate = get_adult_model_result_gender_rate('processed_decision_tree', test_x, processed_test_x)
-    abstracted_zero_male_rate, abstracted_one_male_rate = get_adult_model_result_gender_rate('abstracted_decision_tree', test_x, abstracted_test_x)
-
-    return original_zero_male_rate, original_one_male_rate, processed_zero_male_rate, processed_one_male_rate, abstracted_zero_male_rate, abstracted_one_male_rate
+    original_result = load_model_and_predict('original_decision_tree', original_test_x)
+    processed_result = load_model_and_predict('processed_decision_tree', processed_test_x)
+    abstracted_result = load_model_and_predict('abstracted_decision_tree', abstracted_test_x)
     
-def get_adult_model_result_gender_rate(model_name, test_x, one_hot_test_x):
-    total_len = len(test_x)
-    male_count = test_x["sex"].value_counts()["Male"]
+    original_zero_rates = {}
+    original_one_rates = {}
+    processed_zero_rates = {}
+    processed_one_rates = {}
+    abstracted_zero_rates = {}
+    abstracted_one_rates = {}
+    # zero and one represents the classification result 0 and 1
+    for attribute in ['sex', 'race', 'native_country', 'marital_status']:
+        original_zero_rates[attribute], original_one_rates[attribute] = get_adult_model_prediction_attribute_distribution(test_x, original_result, attribute)
+        processed_zero_rates[attribute], processed_one_rates[attribute] = get_adult_model_prediction_attribute_distribution(test_x, processed_result, attribute)
+        abstracted_zero_rates[attribute], abstracted_one_rates[attribute] = get_adult_model_prediction_attribute_distribution(test_x, abstracted_result, attribute)
+
+    return original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates, abstracted_zero_rates, abstracted_one_rates
+    
+def load_model_and_predict(model_name, one_hot_test_x):
     model = pickle.load(open(f'ml_models/{model_name}', 'rb'))
     result = model.predict(one_hot_test_x)
-    test_x['result'] = result
-    zero_df = test_x.loc[test_x['result'] == 0, :]
-    zero_male_count = zero_df['sex'].value_counts()["Male"]
-    zero_male_rate = zero_male_count/len(zero_df)
-    one_male_count = male_count - zero_male_count
-    one_male_rate = one_male_count/(total_len-len(zero_df))
-    return zero_male_rate, one_male_rate
+    return result
 
+def get_adult_model_prediction_attribute_distribution(test_x, prediction, attribute):
+    test_x['result'] = prediction
+    zero_df = test_x.loc[test_x['result'] == 0, :]
+    one_df = test_x.loc[test_x['result'] == 1, :]
+    zero_rates = zero_df[attribute].value_counts(normalize=True)
+    zero_rates = zero_rates.round(2)
+    one_rates = one_df[attribute].value_counts(normalize=True)
+    one_rates = one_rates.round(2)
+    return zero_rates, one_rates
 
 
 # ---------------- functions to create models ---------------------
