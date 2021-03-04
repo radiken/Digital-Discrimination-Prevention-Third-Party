@@ -89,6 +89,21 @@ def get_adult_models_sensitive_rates_from_experiments():
             rates[key] = value_string
     return rates_list
 
+def get_statlog_models_sensitive_rates_from_experiments():
+    x = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker")
+    y = Statlog.objects.values_list("result")
+    original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates = get_statlog_models_sensitive_rates(x, y)
+    rates_list = [original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates]
+    rates_list_string = []
+    for rates in rates_list:
+        rates_string = ""
+        for attribute, rate in rates.items():
+            rates_string = rates_string+attribute+": "+str(rate)+", "
+        rates_list_string.append(rates_string)
+    return rates_list_string
+
+
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
         if request.POST.get("action")=="run_e1_d1":
@@ -130,6 +145,9 @@ def run_experiments(request, *args, **kwargs):
         elif request.POST.get("action")=="run_e3_t1":
             rates_list = get_adult_models_sensitive_rates_from_experiments()
             ctx = {"original_zero_rates": rates_list[0], "original_one_rates": rates_list[1], "processed_zero_rates": rates_list[2], "processed_one_rates": rates_list[3], "abstracted_zero_rates": rates_list[4], "abstracted_one_rates": rates_list[5]}
+        elif request.POST.get("action")=="run_e3_t2":
+            rates_list = get_statlog_models_sensitive_rates_from_experiments()
+            ctx = {"original_zero_rates": rates_list[0], "original_one_rates": rates_list[1], "processed_zero_rates": rates_list[2], "processed_one_rates": rates_list[3]}
         else:
             ctx = {}
         return HttpResponse(json.dumps(ctx), content_type='application/json')
@@ -140,7 +158,7 @@ def run_experiments(request, *args, **kwargs):
 def experiments_view(request, *args, **kwargs):
     texts = {
         'e1_title' : "1. Prediction experiment",
-        'e1_description' : "This experiment aims to prove that classifiers can have good performance without some sensitive input. We observe the result by controlling the inputs of decision tree classifiers on two real-world data set.",
+        'e1_description' : "This experiment aims to prove that classifiers can have good performance without some sensitive input. We observe the result by controlling the inputs of decision tree classifiers on two real-world data sets.",
         'e1_dataset1' : "Statlog (German Credit Data) Data Set",
         'e1_d1_description1': "Predict the test set with model that use all the information from inputs:",
         'e1_d1_description2': "Take out the information of \"age\", \"marital status and sex\":",
@@ -179,8 +197,11 @@ def experiments_view(request, *args, **kwargs):
         'e2_t2_conclusion': "It seems in reality this is not a problem.",
         'e3_title': "3. Verification experiment",
         'e3_description': "This application attempts to verify the fairness of the decision-making algorithms by observing the distribution of the sensitive information in the classification result. The intuition is, if too many entries with the same sensitive attribute are classified to a same catogory, the algorithm is suspected to have the knowledge of that sensitive information.",
-        'e3_t1_title': "Test 1: sensitive data's distribution of the adult data set",
-        'e3_t1_description': "In experiment 1, three models were used to predict the test set: the original model that use all information (model 1), the processed model that removed some attributes (model 2), and the abstracted model that abstracted two features in addition to the processed model (model 3). This test compare the sensitive information distribution of the classifications of these models."
+        'e3_t1_title': "Test 1: sensitive data's distribution of the adult data set classifications",
+        'e3_t1_description': "In experiment 1, three models were used to predict the test set of the adult data set: the original model that use all information (model 1), the processed model that removed some attributes (model 2), and the abstracted model that abstracted two features in addition to the processed model (model 3). This test compare the sensitive information distribution of the classifications of these models.",
+        'e3_t2_title': "Test 2: sensitive data's distribution of the Statlog (German credit data) set classifications",
+        'e3_t2_description': '''Similarly, in experiment 1, two models were used to predict the test set of the German data set: the original model that use all information (model 1), the processed model that removed some attributes (model 2). This test compare the sensitive information distribution of the classifications of two models. 
+                            Note: A91 : male, divorced/separated; A92 : female, divorced/separated/married; A93 : male, single; A94 : male, married/widowed; A95 : female, single''',
     }
     figures = epsilon_and_noise_level_chart_figures()
     figures.insert(0, ["epsilon", "noise level"])

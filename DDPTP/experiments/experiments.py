@@ -28,8 +28,8 @@ def statlog_prediction_experiment(x, y):
         "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
 
     # the statlog dataset is small, no need to save and load model each time
-    original_train_x, original_test_x, original_train_y, original_test_y = train_test_split(original_x, list(y), test_size=0.33, random_state=0)
-    processed_train_x, processed_test_x, processed_train_y, processed_test_y = train_test_split(processed_x, list(y), test_size=0.33, random_state=0)
+    original_train_x, original_test_x, original_train_y, original_test_y = train_test_split(original_x, list(y), test_size=0.33, random_state=11)
+    processed_train_x, processed_test_x, processed_train_y, processed_test_y = train_test_split(processed_x, list(y), test_size=0.33, random_state=11)
 
     original_clf = tree.DecisionTreeClassifier()
     original_clf.fit(original_train_x, original_train_y)
@@ -171,9 +171,9 @@ def get_adult_models_sensitive_rates(test_x):
     abstracted_one_rates = {}
     # zero and one represents the classification result 0 and 1
     for attribute in ['sex', 'race', 'native_country', 'marital_status']:
-        original_zero_rates[attribute], original_one_rates[attribute] = get_adult_model_prediction_attribute_distribution(test_x, original_result, attribute)
-        processed_zero_rates[attribute], processed_one_rates[attribute] = get_adult_model_prediction_attribute_distribution(test_x, processed_result, attribute)
-        abstracted_zero_rates[attribute], abstracted_one_rates[attribute] = get_adult_model_prediction_attribute_distribution(test_x, abstracted_result, attribute)
+        original_zero_rates[attribute], original_one_rates[attribute] = get_model_prediction_attribute_distribution(test_x, original_result, attribute)
+        processed_zero_rates[attribute], processed_one_rates[attribute] = get_model_prediction_attribute_distribution(test_x, processed_result, attribute)
+        abstracted_zero_rates[attribute], abstracted_one_rates[attribute] = get_model_prediction_attribute_distribution(test_x, abstracted_result, attribute)
 
     return original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates, abstracted_zero_rates, abstracted_one_rates
     
@@ -182,7 +182,7 @@ def load_model_and_predict(model_name, one_hot_test_x):
     result = model.predict(one_hot_test_x)
     return result
 
-def get_adult_model_prediction_attribute_distribution(test_x, prediction, attribute):
+def get_model_prediction_attribute_distribution(test_x, prediction, attribute):
     test_x['result'] = prediction
     zero_df = test_x.loc[test_x['result'] == 0, :]
     one_df = test_x.loc[test_x['result'] == 1, :]
@@ -192,6 +192,40 @@ def get_adult_model_prediction_attribute_distribution(test_x, prediction, attrib
     one_rates = one_rates.round(2)
     return zero_rates, one_rates
 
+def get_statlog_models_sensitive_rates(x, y):
+    x = pd.DataFrame(x)
+    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
+
+    original_train_x, original_test_x, train_y, test_y = train_test_split(x, list(y), test_size=0.33, random_state=0)
+
+    # remove sensitive information in the processed training set
+    processed_train_x = original_train_x.drop(columns=["personal_status_and_sex", "age"])
+    processed_test_x = original_test_x.drop(columns=["personal_status_and_sex", "age"])
+
+    # one hot encode
+    one_hot_original_train_x = pd.get_dummies(original_train_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    one_hot_original_test_x = pd.get_dummies(original_test_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    one_hot_processed_train_x = pd.get_dummies(processed_train_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    one_hot_processed_test_x = pd.get_dummies(processed_test_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+
+    original_clf = tree.DecisionTreeClassifier()
+    original_clf.fit(one_hot_original_train_x, train_y)
+    original_result = original_clf.predict(one_hot_original_test_x)
+    original_result = [i-1 for i in original_result]
+    original_zero_rates, original_one_rates = get_model_prediction_attribute_distribution(original_test_x, original_result, "personal_status_and_sex")
+
+    processed_clf = tree.DecisionTreeClassifier()
+    processed_clf.fit(one_hot_processed_train_x, train_y)
+    processed_result = processed_clf.predict(one_hot_processed_test_x)
+    processed_result = [i-1 for i in processed_result]
+    processed_zero_rates, processed_one_rates = get_model_prediction_attribute_distribution(original_test_x, processed_result, "personal_status_and_sex")
+
+    return original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates
 
 # ---------------- functions to create models ---------------------
 

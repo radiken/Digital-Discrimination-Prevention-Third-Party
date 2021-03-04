@@ -125,6 +125,11 @@ $('#run_e3_t1').click({action: "run_e3_t1", csrf_token: $('#csrf_token').val(), 
     $('#e3_t1_m3_native_country').text("Category 0: \n"+response.abstracted_zero_rates.native_country+"\n Category 1: \n"+response.abstracted_one_rates.native_country);
 }}, run_query);
 
+$('#run_e3_t2').click({action: "run_e3_t2", csrf_token: $('#csrf_token').val(), on_success: function(response) {
+    $('#e3_t2_m1_marital_status_and_sex').text("Category 0: \n"+response.original_zero_rates+"\n Category 1: \n"+response.original_one_rates);
+    $('#e3_t2_m2_marital_status_and_sex').text("Category 0: \n"+response.processed_zero_rates+"\n Category 1: \n"+response.processed_one_rates);
+}}, run_query);
+
 $('#run_e2_t1_c1').click(function(){
     result = e2_t1_q2_original_result*new_count - e2_t1_q1_original_result*(new_count-1);
     $('#e2_t1_c1_result').text(e2_t1_q2_original_result+"*"+new_count+"-"+e2_t1_q1_original_result+"*("+new_count+"-1) = "+result);
