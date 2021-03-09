@@ -16,14 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from client_encryption.views import *
 from experiments.views import *
 from demo.views import *
 
 urlpatterns = [
     path('', home_view, name='home'),
-    path('individual/', individual_detail_view),
-    path('submission/', individual_creation_view),
     path('admin/', admin.site.urls),
 
     path('experiments/', experiments_view),
@@ -31,4 +28,5 @@ urlpatterns = [
 
     path('demo/index', demo_index_view),
     path('demo/submission', individual_submission_view),
+    path('demo/index/predict', predict)
 ]
