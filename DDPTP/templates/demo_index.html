@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <h1> Demo </h1>
 <h4> This is a process demonstration of the Digital Discrimination Prevention Third Party (DDPTP) model</h4>
@@ -29,26 +30,9 @@
             {% if submission_data != null %}
                 <h4>3. run algorithm</h4>    
                 <p>age: {{submission_data.age}}, workclass: {{submission_data.workclass}}, fnlwgt: {{submission_data.fnlwgt}}, education: {{submission_data.education}}, education num: {{submission_data.education_num}}, occupation: {{submission_data.occupation}}, relationship: {{submission_data.relationship}}, capital gain, {{submission_data.capital_gain}}, capital loss: {{submission_data.capital_loss}}, hours per week: {{submission_data.hours_per_week}} </p>
-                <form method="POST" action="index"> {% csrf_token %}
-                    <input type="hidden" name="age" value={{submission_data.age}}>
-                    <input type="hidden" name="workclass" value={{submission_data.workclass}}>
-                    <input type="hidden" name="fnlwgt" value={{submission_data.fnlwgt}}>
-                    <input type="hidden" name="education" value={{submission_data.education}}>
-                    <input type="hidden" name="education_num" value= {{submission_data.education_num}}>
-                    <input type="hidden" name="marital_status" value={{submission_data.marital_status}}>
-                    <input type="hidden" name="occupation" value={{submission_data.occupation}}>
-                    <input type="hidden" name="relationship" value={{submission_data.relationship}}>
-                    <input type="hidden" name="race" value={{submission_data.race}}>
-                    <input type="hidden" name="sex" value={{submission_data.sex}}>
-                    <input type="hidden" name="capital_gain" value={{submission_data.capital_gain}}>
-                    <input type="hidden" name="capital_loss" value={{submission_data.capital_loss}}>
-                    <input type="hidden" name="hours_per_week" value={{submission_data.hours_per_week}}>
-                    <input type="hidden" name="native_country" value={{submission_data.native_country}}>
-                    <input type="submit" value="run" name="run_algorithm"/>
-                </form>
-                {% if result != null %}
-                    <p>result: {{result}}</p>
-                {% endif %}
+                <input type="button" id="predict" value="run algorithm" name="predict"/>
+                <!-- </form> -->
+                <p id="result" style="display:none;"></p>
             {% endif %}
         </div>
     </div>
@@ -71,4 +55,27 @@
         </div>
     </div>
 </div> -->
+
+<input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+{% if submission_data != null %}
+    <input type="hidden" id="account_status" value={{submission_data.account_status}}>
+    <input type="hidden" id="duration" value={{submission_data.duration}}>
+    <input type="hidden" id="credit_history" value={{submission_data.credit_history}}>
+    <input type="hidden" id="purpose" value={{submission_data.purpose}}>
+    <input type="hidden" id="credit_amount" value= {{submission_data.credit_amount}}>
+    <input type="hidden" id="savings_account" value={{submission_data.savings_account}}>
+    <input type="hidden" id="present_employment_since" value={{submission_data.present_employment_since}}>
+    <input type="hidden" id="installment_rate_in_income" value={{submission_data.installment_rate_in_income}}>
+    <input type="hidden" id="guarantors" value={{submission_data.guarantors}}>
+    <input type="hidden" id="present_residence_since" value={{submission_data.present_residence_since}}>
+    <input type="hidden" id="other_installment_plans" value={{submission_data.other_installment_plans}}>
+    <input type="hidden" id="housing" value={{submission_data.housing}}>
+    <input type="hidden" id="existing_credits" value={{submission_data.existing_credits}}>
+    <input type="hidden" id="job" value={{submission_data.job}}>
+    <input type="hidden" id="maintenance_provider_number" value={{submission_data.maintenance_provider_number}}>
+    <input type="hidden" id="telephone" value={{submission_data.telephone}}>
+    <input type="hidden" id="foreign_worker" value={{submission_data.foreign_worker}}>
+{% endif %}
+
+<script type="text/javascript" src="{% static '/js/demo_index.js' %}"></script>
 {% endblock %}

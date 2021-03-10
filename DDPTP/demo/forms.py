@@ -69,4 +69,3 @@ class Statlog_submission_form(forms.Form):
     maintenance_provider_number = forms.IntegerField(help_text="Number of people being liable to provide maintenance for")
     telephone = forms.ChoiceField(choices = TELEPHONE_CHOICES, help_text="")
     foreign_worker = forms.ChoiceField(choices = FOREIGN_WORKER_CHOICES, help_text="")
-    result = forms.IntegerField(help_text="")

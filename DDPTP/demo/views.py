@@ -12,15 +12,13 @@ def home_view(request, *args, **kwargs):
 def demo_index_view(request, *args, **kwargs):
     if request.POST.get("submission"):
         context = {"submission_data": request.POST}
-    elif request.POST.get("run_algorithm"):
-        # remove irrelevant data from the dict
-        data = dict(request.POST)
-        data.pop('csrfmiddlewaretoken', None)
-        data.pop('run_algorithm', None)
-        
-        # TODO: run model to get real result
-        result = "<50k"
-        context = {"result": result, "submission_data": data}
+    # elif request.POST.get("run_algorithm"):
+    #     # remove irrelevant data from the dict
+    #     data = dict(request.POST)
+    #     data.pop('csrfmiddlewaretoken', None)
+    #     data.pop('run_algorithm', None)
+    #     result = "<50k"
+    #     context = {"result": result, "submission_data": data}
     else:
         context = {}
     return render(request, "demo_index.html", context)
@@ -41,11 +39,13 @@ def individual_submission_view(request, *args, **kwargs):
     return render(request, "submission.html", context)
 
 def predict(request, *args, **kwargs):
-    # TODO
     if request.method == 'POST':
-        if request.POST.get("action")=="run_e1_d1":
-            original_score, processed_score = statlog_prediction()
-            ctx = {'statlog_original_score': original_score, 'statlog_processed_score': processed_score}
+        if request.POST.get("action")=="predict":
+            data = dict(request.POST)
+            data.pop("action")
+            data.pop("csrfmiddlewaretoken")
+            print(data)
+            ctx = {'result': 'Good customer'}
         else:
             ctx = {}
         return HttpResponse(json.dumps(ctx), content_type='application/json')
