@@ -17,6 +17,10 @@ def demo_index_view(request, *args, **kwargs):
         context = {}
     return render(request, "demo_index.html", context)
 
+def demo_contract_view(request, *args, **kwargs):
+	my_context = {}
+	return render(request, "contract.html", my_context)
+
 def individual_submission_view(request, *args, **kwargs):
     result = ""
     form = Statlog_submission_form()
