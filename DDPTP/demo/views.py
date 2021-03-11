@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from experiments.models import Adult_original
-from experiments.models import Adult_test
+from experiments.models import Statlog
 from .forms import *
 from django.http import HttpResponse
 import json
+import pandas as pd
+from sklearn import tree
 
 def home_view(request, *args, **kwargs):
 	my_context = {}
@@ -12,13 +13,6 @@ def home_view(request, *args, **kwargs):
 def demo_index_view(request, *args, **kwargs):
     if request.POST.get("submission"):
         context = {"submission_data": request.POST}
-    # elif request.POST.get("run_algorithm"):
-    #     # remove irrelevant data from the dict
-    #     data = dict(request.POST)
-    #     data.pop('csrfmiddlewaretoken', None)
-    #     data.pop('run_algorithm', None)
-    #     result = "<50k"
-    #     context = {"result": result, "submission_data": data}
     else:
         context = {}
     return render(request, "demo_index.html", context)
@@ -33,7 +27,7 @@ def individual_submission_view(request, *args, **kwargs):
         result = plain_data
     texts = {
         'title': "A Company's Data Collection Form",
-        'description': "Your data will be collected through the DDPTP, we coperate with this company to ensure that you will be fairly treated by the company's decision-making algorithm. The information with the \"protected\" label will not be sent to the company."
+        'description': "Your data will be collected through the DDPTP, we cooperate with this company to ensure that you will be fairly treated by the company's decision-making algorithm. The information with the \"protected\" label will not be sent to the company."
     }
     context = {'form': form, 'result': result, 'texts': texts}
     return render(request, "submission.html", context)
@@ -44,10 +38,37 @@ def predict(request, *args, **kwargs):
             data = dict(request.POST)
             data.pop("action")
             data.pop("csrfmiddlewaretoken")
-            print(data)
-            ctx = {'result': 'Good customer'}
+            for key, value in data.items():
+                data[key] = value[0]
+            result = statlog_prediction(data)
+            result = int(result)
+            if result==0:
+                result = "bad costomer"
+            else:
+                result = "good costomer"
+            ctx = {'result': result}
         else:
             ctx = {}
         return HttpResponse(json.dumps(ctx), content_type='application/json')
     else:
         return HttpResponse(json.dumps({}), content_type='application/json')
+
+def statlog_prediction(data):
+    x = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker")
+    y = Statlog.objects.values_list("result")
+
+    x = pd.DataFrame(x)
+    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
+    x = x.drop(columns=["personal_status_and_sex", "age"])
+    x = x.append(data, ignore_index=True)
+    one_hot_x = pd.get_dummies(x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    data = one_hot_x.iloc[-1]
+    one_hot_x = one_hot_x.iloc[:-1]
+    y = list(y)
+
+    clf = tree.DecisionTreeClassifier()
+    clf.fit(one_hot_x, y)
+    return clf.predict([data])

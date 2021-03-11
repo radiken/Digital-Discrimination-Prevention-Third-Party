@@ -38,7 +38,7 @@ $('#predict').on('click', function () {
         maintenance_provider_number: $('#maintenance_provider_number').val(), telephone: $('#telephone').val(), foreign_worker: $('#foreign_worker').val()},
         dataType: "json",
         success: function(response){
-            $('#result').text("result: True");
+            $('#result').text("result: "+response.result);
             $('#result').show();
         },
         error: function(rs, e) {

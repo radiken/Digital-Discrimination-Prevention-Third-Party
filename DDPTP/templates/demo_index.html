@@ -18,7 +18,7 @@
         <div class="text-center">
             {% if submission_data != null %}
                 <h4>2. save and preserve sensitive data</h4>    
-                <p>marital status: {{ submission_data.marital_status }}, race: {{ submission_data.race }}, sex: {{ submission_data.sex }}, native country: {{submission_data.native_country}} </p>
+                <p>marital status: {{ submission_data.personal_status_and_sex }}, age: {{ submission_data.age }}</p>
                 <p>non-sensitive data is sent to the organization automatically</p>
             {% endif %}
         </div>
@@ -27,11 +27,16 @@
     <div class="col-md-4">
         <h3 class="text-center">Organization</h3>
         <div class="text-center">
-            {% if submission_data != null %}
+            {% if submission_data != null %} 
                 <h4>3. run algorithm</h4>    
-                <p>age: {{submission_data.age}}, workclass: {{submission_data.workclass}}, fnlwgt: {{submission_data.fnlwgt}}, education: {{submission_data.education}}, education num: {{submission_data.education_num}}, occupation: {{submission_data.occupation}}, relationship: {{submission_data.relationship}}, capital gain, {{submission_data.capital_gain}}, capital loss: {{submission_data.capital_loss}}, hours per week: {{submission_data.hours_per_week}} </p>
+                <p>account status: {{submission_data.account_status}}, duration: {{submission_data.duration}}, credit history: {{submission_data.credit_history}}, 
+                   purpose: {{submission_data.purpose}}, credit amount: {{submission_data.credit_amount}}, savings account: {{submission_data.savings_account}}, 
+                   present employment since, {{submission_data.present_employment_since}}, installment rate in income: {{submission_data.installment_rate_in_income}}, 
+                   guarantors: {{submission_data.guarantors}}, present residence since: {{submission_data.present_residence_since}}, property: {{submission_data.property}}, 
+                   other installment plans: {{submission_data.other_installment_plans}}, housing: {{submission_data.housing}}, existing credits: {{submission_data.existing_credits}}, 
+                   job: {{submission_data.job}}, maintenance provider number: {{submission_data.maintenance_provider_number}}, telephone: {{submission_data.telephone}}, 
+                   foreign worker: {{submission_data.foreign_worker}} </p>
                 <input type="button" id="predict" value="run algorithm" name="predict"/>
-                <!-- </form> -->
                 <p id="result" style="display:none;"></p>
             {% endif %}
         </div>
