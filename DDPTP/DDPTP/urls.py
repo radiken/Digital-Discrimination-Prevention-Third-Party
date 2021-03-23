@@ -29,5 +29,6 @@ urlpatterns = [
     path('demo/index', demo_index_view),
     path('demo/contract', demo_contract_view),
     path('demo/submission', individual_submission_view),
+    path('demo/api', demo_api_view),
     path('demo/index/predict', predict)
 ]

@@ -2,9 +2,22 @@
 {% load static %}
 {% block content %}
 <h1> Demo </h1>
-<h4> This is a process demonstration of the Digital Discrimination Prevention Third Party (DDPTP) model</h4>
+<h4> This is a process demonstration of the Digital Discrimination Prevention Third Party model</h4>
 
-<h2 class="text-center">Demo 1</h2>
+<h2 class="text-center">The DDP App Demo Pages</h2>
+<div class="row text-center">
+    <div class="col-md-4">
+        <a href="/demo/contract">Create a form</a>
+    </div>
+    <div class="col-md-4">
+        <a href="/demo/submission">Submit data</a>
+    </div>
+    <div class="col-md-4">
+        <a href="/demo/api">Make queries</a>
+    </div>
+</div>
+
+<h2 class="text-center">Process demonstration</h2>
 <div class="row">
     <div class="col-md-4">
         <h3 class="text-center">Individual</h3>
@@ -14,7 +27,7 @@
         </div>
     </div>
     <div class="col-md-4">
-        <h3 class="text-center">DDPTP Application</h3>
+        <h3 class="text-center">The DDP App</h3>
         <div class="text-center">
             {% if submission_data != null %}
                 <h4>2. save and preserve sensitive data</h4>    

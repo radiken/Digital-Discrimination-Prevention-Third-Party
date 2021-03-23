@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 {% load static %} 
 {% block content %}
-<form>
-    <input type="button" id="add_field" value="add a field" name="add_field"/>
-</form>
+<div class="container" style="width: 900px;">
+    <form id="form" method="POST" action="index"> {% csrf_token %}
+        <label>Company name</label>
+        <input required class="form-control"/>
+        <label>Form description</label>
+        <textarea class="form-control" rows=3></textarea>
+        <input type="button" id="add_field" value="add a field" name="add_field"/>
+        <input type="submit" value="save" id="submission"/>
+    </form>
+</div>
 
-<div id="new_field" style="display: none;">
+<div id="new_field" class="field" style="display: none;">
     <div class="form-group">
         <label>Field name</label>
-        <input class="form-control">
+        <input required class="form-control"/>
     </div>
     <div class="form-group">
         <label>Field description</label>
@@ -19,10 +26,42 @@
         <option value="text_field">text field</option>
         <option value="choice_field">choice field</option>
     </select>
+    <div class="text_field_details">
+        <select class="form-control field_type">
+            <label>text type</label>
+            <option>numeric</option>
+            <option>short string (one line text area)</option>
+            <option>long string (multiple line text area)</option>
+        </select>
+    </div>
     <div class="choice_field_details" style="display: none;">
+        <input placeholder='enter a choice' class='choice'>
         <input type='button' value='add a choice' class='add_choice'/>
     </div>
-    <input type="button" class="remove" value="remove field"></span>
+    <div class="form-group">
+        <label>This a sensitive attribute</label>
+        <input type="checkbox" class="is_sensitive"/>
+        <div class="sensitive_details" style="display: none;">
+            <select class="form-control sensitive_type">
+                <label>I think I want to </label>
+                <option value="hide">hide this </option>
+                <option value="abstract">abstract this </option>
+            </select>
+            <div class="abstraction_details" style="display: none;">
+                <label>How do you want to abstract this?</label>
+                <textarea class="form-control" rows=3></textarea>
+            </div>
+        </div>
+        <br>
+        <label>Any specific reasons?</label>
+        <textarea class="form-control" rows=3 placeholder='Why it is or why it is not'></textarea>
+    </div>
+    <input type="button" class="remove" value="remove field"/>
+</div>
+
+<div id="new_choice" style="display: none;">
+    <input placeholder='enter a choice' class='choice'>
+    <input type="button" class="remove" value="remove choice"/>
 </div>
 <script>
 $("#add_field").click(function() {
@@ -35,15 +74,45 @@ $(".remove").click(function() {
 
 $(".field_type").change(function(){
     if($(this).val()=="choice_field"){
-        $(this).next().show();
+        $(this).next().hide();
+        $(this).next().next().show();
     }
     if($(this).val()=="text_field"){
-        $(this).next().hide();
+        $(this).next().show();
+        $(this).next().next().hide();
     }
 });
 
 $(".add_choice").click(function() {
-    $("<input placeholder='enter a choice' class='choice'>").insertBefore($(this));
+    $("#new_choice").clone(true).insertBefore($(this)).attr("id", "").show();
+});
+
+$(function() {
+    $(".is_sensitive").change(function()
+    {
+    if ($(this).is(':checked')){
+        $(this).next().show();
+    }
+    else{
+        $(this).next().hide();
+    }
+    });
+});
+
+$(".sensitive_type").change(function(){
+    if($(this).val()=="hide"){
+        $(this).next().hide();
+    }
+    if($(this).val()=="abstract"){
+        $(this).next().show();
+    }
+});
+
+$("#submission").click(function() {
+    if($('.field').length <= 1){
+        alert("You have to create at least one field!");
+        $("#form").attr("action", "");
+    }
 });
 
 </script>

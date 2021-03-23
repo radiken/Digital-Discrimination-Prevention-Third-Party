@@ -36,6 +36,10 @@ def individual_submission_view(request, *args, **kwargs):
     context = {'form': form, 'result': result, 'texts': texts}
     return render(request, "submission.html", context)
 
+def demo_api_view(request, *args, **kwargs):
+	my_context = {}
+	return render(request, "api.html", my_context)
+
 def predict(request, *args, **kwargs):
     if request.method == 'POST':
         if request.POST.get("action")=="predict":

@@ -140,7 +140,7 @@ def run_experiments(request, *args, **kwargs):
             noise_sum = get_noise_n_times(100000, epsilon=1)
             ctx = {'noise_sum': noise_sum}
         elif request.POST.get("action")=="run_e2_t2_c2":
-            noise_sum = get_noise_n_times(100000, epsilon=2)
+            noise_sum = get_noise_n_times(100000, epsilon=0.5)
             ctx = {'noise_sum': noise_sum}
         elif request.POST.get("action")=="run_e3_t1":
             rates_list = get_adult_models_sensitive_rates_from_experiments()
@@ -187,13 +187,13 @@ def experiments_view(request, *args, **kwargs):
         'e2_t1_subtitle3': "\"How many\" queries:",
         'e2_t1_q5_description': "This part tests the performance of differential privacy with queries that ask \"how many...\" questions, in this case the size of the data set does not matter, because no computation is necessary where the new entry can only affect the result by 0 or 1. Suppose the organization is querying the number of single male in the data set:",
         'e2_t1_q6_description': "Suppose another entries comes in that satisfy the requirement (he is a single male):",
-        'e2_t1_description4': "Base on the mechanism of laplace differential privacy, the best guess one can do is: if the second result is larger than the first result, the new entry satisfies the requirement, else it doesn't. Try to make a guess:",
+        'e2_t1_description4': "Based on the mechanism of laplace differential privacy, the best guess one can do is: if the second result is larger than the first result, the new entry satisfies the requirement, else it doesn't. Try to make a guess:",
         'e2_t1_description5': "Now with the information of the processed result, test the winning rate by running the above guess 1000 times:",
         'e2_t1_description6': "The above computation use epsilon=1, choosing a smaller epsilon will increase the noise, run the test again with epsilon=0.5:",
         'e2_t2_title': "Test 2: Multiple queries privacy level test",
         'e2_t2_description': "So far, individual's privacy seems to be safe, but there is one more things to test. The laplace machenism in differential privacy means the noise follows a laplace distribution, which means the expected noise is 0. If one makes the same queries many times, it is expected to have 0 noise when calculating the average.",
         'e2_t2_c1_description': "Run the differential privacy algorithm 100,000 times with epsilon=1 (applies in continuous return queries), only takes the noise and sum them up:",
-        'e2_t2_c2_description': "Run 100,000 times with epsilon=2 (applies in \"how many\" question queries):",
+        'e2_t2_c2_description': "Run 100,000 times with epsilon=0.5 (applies in \"how many\" question queries):",
         'e2_t2_conclusion': "It seems in reality this is not a problem.",
         'e3_title': "3. Verification experiment",
         'e3_description': "This application attempts to verify the fairness of the decision-making algorithms by observing the distribution of the sensitive information in the classification result. The intuition is, if too many entries with the same sensitive attribute are classified to a same catogory, the algorithm is suspected to have the knowledge of that sensitive information.",
