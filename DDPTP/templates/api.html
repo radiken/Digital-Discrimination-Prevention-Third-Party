@@ -1,6 +1,26 @@
 {% extends 'base.html' %}
 {% load static %} 
 {% block content %}
-<h1>The API</h1>
-
+<div class="container">
+    <h1>The API</h1>
+    <p>
+        Data set information:<br>
+        Table name: experiments_statlog<br>
+        Columns: "account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker". <br>
+        Note: Details of column values of this demo data set please see https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data
+    </p>
+    <p>
+        Rules:<br> 
+        1. Queries must be select queries from the given table only.<br>
+        2. Queries must be on the whole data set, i.e. keyword "LIMIT" is not allowed.<br>
+        3. Queries must return a numeric result that is a statistical information, i.e. queries should contain functions like COUNT(), AVG(), SUM(), STDDEV(), VARIANCE()<br>
+        4. "WHERE" conditions are allowed, but queries only returns a result when the sample set has more than 10 entries.<br>
+    </p>
+    <form method="GET" action="api/result">
+        <input required class="form-control" name="query"/>
+        <input type="submit" value="query" id="submission"/>
+    </form>
+    
+</div>
 {% endblock %}

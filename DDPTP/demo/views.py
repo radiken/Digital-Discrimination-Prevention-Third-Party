@@ -2,9 +2,11 @@ from django.shortcuts import render
 from experiments.models import Statlog
 from .forms import *
 from django.http import HttpResponse
+from django.db import connection
 import json
 import pandas as pd
 from sklearn import tree
+import re
 
 def home_view(request, *args, **kwargs):
 	my_context = {}
@@ -39,6 +41,46 @@ def individual_submission_view(request, *args, **kwargs):
 def demo_api_view(request, *args, **kwargs):
 	my_context = {}
 	return render(request, "api.html", my_context)
+
+def api_result(request, *args, **kwargs):
+    if request.method == 'GET':
+        query = request.GET.get("query")
+        if check_query(query, "experiments_statlog") == True:
+            if "where" in query.lower():
+                try:
+                    condition = re.split("where", query, flags=re.IGNORECASE)[1]
+                    count_query = "select count(*) from experiments_statlog where" + condition
+                    if get_query_result(count_query)<10:
+                        result = "Unable to return a result because the number of entries that satisfy the 'WHERE' condition is less than 10."
+                        return HttpResponse(json.dumps(result), content_type='application/json')
+                except:
+                    result = "Invalid query! Please enter a MySQL query that returns a number with correct syntax."
+                    return HttpResponse(json.dumps(result), content_type='application/json')
+            try:
+                result = get_query_result(query)
+                result = float(result)
+            except:
+                result = "Invalid query! Please enter a MySQL query that returns a number with correct syntax."
+        else:
+            result = "Invalid query! Please refer to the rules of making queries."
+    else:
+        result= "Error! Please make query through GET method."
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
+def check_query(query, table_name):
+    lowered_query = query.lower()
+    if any(keyword in lowered_query for keyword in ("limit", "join", "insert", "update", "delete", " on ")):
+        return False
+    if "select" and table_name in lowered_query:
+        if any(keyword in lowered_query for keyword in ("count", "sum", "avg", "stddev", "variance")):
+            return True
+    return False
+
+def get_query_result(query):
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchone()
+    return float(result[0])
 
 def predict(request, *args, **kwargs):
     if request.method == 'POST':
