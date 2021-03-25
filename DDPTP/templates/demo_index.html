@@ -1,78 +1,83 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1> Demo </h1>
-<h4> This is a process demonstration of the Digital Discrimination Prevention Third Party model</h4>
+<link rel="stylesheet" href="{% static '/css/demo_index.css' %}">
 
-<h2 class="text-center">The DDP App Demo Pages</h2>
-<div class="row text-center">
-    <div class="col-md-4">
-        <a href="/demo/contract">Create a form</a>
+<div class="container">
+    <div class="title">
+        <h1> Demo </h1>
     </div>
-    <div class="col-md-4">
-        <a href="/demo/submission">Submit data</a>
+    <h2 style="margin-bottom: 30px;">The DDP App Demo Pages</h2>
+    <div class="row text-center">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body" style="margin:10px;">
+                    <a href="contract" class="card-link"><h5 class="card-title">Create forms</h5></a>
+                    <h6 class="card-subtitle mb-2 text-muted">For organizations</h6>
+                    <p class="card-text">Organizations create their forms here for individuals to fill in. Organizations should specify every details of each attributes in the form.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body" style="margin:10px;">
+                    <a href="submission" class="card-link"><h5 class="card-title">Submit data</h5></a>
+                    <h6 class="card-subtitle mb-2 text-muted">For individuals</h6>
+                    <p class="card-text">Individuals submit their information here. This demo page uses the form for the Statlog (German Credit Data) Data Set.</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body" style="margin:10px;">
+                        <a href="api" class="card-link"><h5 class="card-title">make queries</h5></a>
+                    <h6 class="card-subtitle mb-2 text-muted">For organizations</h6>
+                    <p class="card-text">Once more than 10 people submitted their data, organizations can make queries on the data set through this API, This demo page use the Statlog (German Credit Data) Data Set as the example.</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <a href="/demo/api">Make queries</a>
+
+    <h2>Process demonstration</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <h3 class="text-center">Individual</h3>
+            <div class="text-center">
+                <h4>1. submission</h4>
+                <a href="/demo/submission">submit a data here</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h3 class="text-center">The DDP App</h3>
+            <div class="text-center">
+                {% if submission_data != null %}
+                    <h4>2. save and preserve sensitive data</h4>    
+                    <p>marital status: {{ submission_data.personal_status_and_sex }}, age: {{ submission_data.age }}</p>
+                    <p>non-sensitive data is sent to the organization automatically</p>
+                {% endif %}
+            </div>
+            <br>
+        </div>
+        <div class="col-md-4">
+            <h3 class="text-center">Organization</h3>
+            <div class="text-center">
+                {% if submission_data != null %} 
+                    <h4>3. run algorithm</h4>    
+                    <p>account status: {{submission_data.account_status}}, duration: {{submission_data.duration}}, credit history: {{submission_data.credit_history}}, 
+                    purpose: {{submission_data.purpose}}, credit amount: {{submission_data.credit_amount}}, savings account: {{submission_data.savings_account}}, 
+                    present employment since, {{submission_data.present_employment_since}}, installment rate in income: {{submission_data.installment_rate_in_income}}, 
+                    guarantors: {{submission_data.guarantors}}, present residence since: {{submission_data.present_residence_since}}, property: {{submission_data.property}}, 
+                    other installment plans: {{submission_data.other_installment_plans}}, housing: {{submission_data.housing}}, existing credits: {{submission_data.existing_credits}}, 
+                    job: {{submission_data.job}}, maintenance provider number: {{submission_data.maintenance_provider_number}}, telephone: {{submission_data.telephone}}, 
+                    foreign worker: {{submission_data.foreign_worker}} </p>
+                    <input type="button" id="predict" value="run algorithm" name="predict"/>
+                    <p id="result" style="display:none;"></p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
-
-<h2 class="text-center">Process demonstration</h2>
-<div class="row">
-    <div class="col-md-4">
-        <h3 class="text-center">Individual</h3>
-        <div class="text-center">
-            <h4>1. submission</h4>
-            <a href="/demo/submission">submit a data here</a>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <h3 class="text-center">The DDP App</h3>
-        <div class="text-center">
-            {% if submission_data != null %}
-                <h4>2. save and preserve sensitive data</h4>    
-                <p>marital status: {{ submission_data.personal_status_and_sex }}, age: {{ submission_data.age }}</p>
-                <p>non-sensitive data is sent to the organization automatically</p>
-            {% endif %}
-        </div>
-        <br>
-    </div>
-    <div class="col-md-4">
-        <h3 class="text-center">Organization</h3>
-        <div class="text-center">
-            {% if submission_data != null %} 
-                <h4>3. run algorithm</h4>    
-                <p>account status: {{submission_data.account_status}}, duration: {{submission_data.duration}}, credit history: {{submission_data.credit_history}}, 
-                   purpose: {{submission_data.purpose}}, credit amount: {{submission_data.credit_amount}}, savings account: {{submission_data.savings_account}}, 
-                   present employment since, {{submission_data.present_employment_since}}, installment rate in income: {{submission_data.installment_rate_in_income}}, 
-                   guarantors: {{submission_data.guarantors}}, present residence since: {{submission_data.present_residence_since}}, property: {{submission_data.property}}, 
-                   other installment plans: {{submission_data.other_installment_plans}}, housing: {{submission_data.housing}}, existing credits: {{submission_data.existing_credits}}, 
-                   job: {{submission_data.job}}, maintenance provider number: {{submission_data.maintenance_provider_number}}, telephone: {{submission_data.telephone}}, 
-                   foreign worker: {{submission_data.foreign_worker}} </p>
-                <input type="button" id="predict" value="run algorithm" name="predict"/>
-                <p id="result" style="display:none;"></p>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<!-- <h2 class="text-center">Demo 2 (verification step demo)</h2>
-<div class="row" class="text-center">
-    <div class="col-md-6">
-        <h3 class="text-center">DDPTP Application</h3>
-        <div>
-            <h4>2. Verify</h4>
-            <p>Observer the sensitive data distribution in the decision set</p>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <h3 class="text-center">Organization</h3>
-        <div>
-            <h4>1. Made a large set of decision</h4>
-            <p>The results are returned to the application</p>
-        </div>
-    </div>
-</div> -->
 
 <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
 {% if submission_data != null %}

@@ -31,5 +31,7 @@ urlpatterns = [
     path('demo/submission', individual_submission_view),
     path('demo/api', demo_api_view),
     path('demo/api/result', api_result),
-    path('demo/index/predict', predict)
+    path('demo/index/predict', predict),
+
+    path('about/', about_view)
 ]

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %} 
+{% block content %}
+
+<div class="container">
+    <div class="title">
+        <h1>About the Model</h1>
+    </div>
+    <p>
+        Discrimination was an issue among humans before the invention of artificial intelligence. However, the rapid development and increasing use of artificial intelligence has raised this concern to algorithms. Algorithms, particularly machine learning algorithms, have involved in or replaced the human’s decision-making process in some scenarios, for example, trading, diagnosing and driving. While this is bringing huge benefit to society, some of the decision-making algorithms are discriminating against certain groups of people. This type of discrimination is called digital discrimination. At present, this is likely to take place when organizations use algorithms to make decisions on individuals. For example, algorithms are helping to decide whether organizations should hire a person. 
+        In 2017, 55% of human resource managers believed artificial intelligence will be involved in human resource decision making in five years. 
+    </p>
+    <p>
+        Since machine learning algorithms are data-driven, digital discrimination originates from the training process, where the training set is provided by humans. For example, a data set with gender discrimination tends to inform the algorithm that gender is a good attribute to make classifications with. Hence, controlling the input attributes of the decision-making algorithms is a reasonable attempt to address the issue. While in most cases machine learning algorithms are unexplainable, humans should be able to identify what should not be considered when making decisions. Therefore, hiding some sensitive data of individuals from organizations is rational and beneficial in terms of addressing digital discrimination.
+    </p>
+    <p>
+        However, from the business perspective, it is less realistic to restrict organizations’ right to collect data legally, considering the huge business value of user’s data. Moreover, some information that is treated as sensitive information in the decision-making process may be non-sensitive information for other business processes of the organization. Consequently, a conflict is shown when preventing digital discrimination, that is, the conflict between protecting individuals’ privacy in the decision making process and allowing organizations to collect and use data legally. This project aims to create a model that prevents digital discrimination, in the meanwhile, address this conflict.
+    </p>
+</div>
+{% endblock %}

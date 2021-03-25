@@ -1,21 +1,65 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-    <h1>Digital Discrimination Prevention Model</h1>
-    <h4>Author: Zhuolun Li</h4>
 
-    <div>
-        This is a awesome model
-        <!-- {{ my_text|capfirst }}
+<link rel="stylesheet" href="{% static '/css/home.css' %}">
 
-        <ul>
-            {% for item in my_list %}
-                {% if item == 1 %}
-                    <li>{{item|add:22}}</li>
-                {% else %}
-                    <li>{{item}}</li>
-                {% endif %}
-            {% endfor %}
-        </ul> -->
+<div class="container">
+    <div class="text-center" id="title">
+        <h1>The Digital Discrimination Prevention Model</h1>
+        <h5 class="mt-5">Author: Zhuolun Li</h5>
     </div>
+
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="feature p-3 p-md-4 mx-auto">
+                <div class="icon">
+                    <img src="{% static '/images/balance.png' %}" width="110px">
+                </div>
+                <h5 class="mb-3">Prevents Discrimination</h5>
+                <p class="text-muted">Prevent discrimination from algorithms easily with the help of the third-party application. Value individuals' right.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature p-3 p-md-4 mx-auto">
+                <div class="icon">
+                    <img src="{% static '/images/lock.png' %}" width="90px">
+                </div>
+                <h5 class="mb-3">Protects Privacy</h5>
+                <p class="text-muted">Protect individuals' sensitive information from being accessed by decision-making algorithms. Eliminate discrimination from the root.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature p-3 p-md-4 mx-auto">
+                <div class="icon">
+                    <img src="{% static '/images/chart.png' %}" width="100px">
+                </div>
+                <h5 class="mb-3">Preserves Business Insight</h5>
+                <p class="text-muted">Allows businesses to access sensitive information statistically. Be considerate to businesses.</p>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row mt-5 text-center">
+        <div class="col-sm-6">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">See Demo</h5>
+                <p class="card-text">Navigate how the model works with an example. Play with each processes and see how individuals and organizations act in the model.</p>
+                <a href="demo/index" class="btn btn-primary">Go to demo</a>
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">See Experiments</h5>
+                <p class="card-text">View experiments and findings about the model, understand why the model is effective. Even run your own experiments to see how it goes.</p>
+                <a href="experiments" class="btn btn-primary">Go to experiments</a>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

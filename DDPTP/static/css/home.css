@@ -1,0 +1,21 @@
+#title {
+    margin-top: 100px;
+    margin-bottom: 60px;
+}
+
+.feature {
+    border: 2px solid lightgray;
+    border-radius: 2%;
+    transition: background-color .3s;
+    position: relative;
+    max-width: 380px;
+    min-height: 325px;
+} 
+
+.feature:hover {
+    background: lightgray; 
+}
+
+.icon {
+    min-height: 120px;
+}

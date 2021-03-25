@@ -1,0 +1,13 @@
+.container {
+    animation: fadein 1.2s;
+}
+
+.title {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}

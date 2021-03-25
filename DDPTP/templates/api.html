@@ -8,19 +8,25 @@
         Table name: experiments_statlog<br>
         Columns: "account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
         "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker". <br>
+        Sensitive columns: "age", "personal_status_and_sex"<br>
         Note: Details of column values of this demo data set please see https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data
     </p>
     <p>
         Rules:<br> 
         1. Queries must be select queries from the given table only.<br>
         2. Queries must be on the whole data set, i.e. keyword "LIMIT" is not allowed.<br>
-        3. Queries must return a numeric result that is a statistical information, i.e. queries should contain functions like COUNT(), AVG(), SUM(), STDDEV(), VARIANCE()<br>
+        3. Queries must return a numeric result that is a statistical information, i.e. queries should contain functions like COUNT(), AVG(), SUM(), STDDEV(), VARIANCE().<br>
         4. "WHERE" conditions are allowed, but queries only returns a result when the sample set has more than 10 entries.<br>
+        5. Query results are processed by the Laplace mechanism of differential privacy. COUNT() queries will be processed with epsilon 0.5, other queries will be processed with epsilon 1.0. 
     </p>
     <form method="GET" action="api/result">
         <input required class="form-control" name="query"/>
         <input type="submit" value="query" id="submission"/>
     </form>
-    
+    <p>
+        Examples:<br>
+        Querying the average age: SELECT AVG(age) FROM experiments_statlog <br>
+        Querying the number of people with over 200DM in their account (A13) and make a loan to buy new car (A40): SELECT COUNT(*) FROM experiments_statlog WHERE account_status="A13" and purpose="A40"
+    </p>
 </div>
 {% endblock %}
