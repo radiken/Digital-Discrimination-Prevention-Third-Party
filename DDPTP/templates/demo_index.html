@@ -31,7 +31,7 @@
         <div class="col-4">
             <div class="card">
                 <div class="card-body" style="margin:10px;">
-                        <a href="api" class="card-link"><h5 class="card-title">make queries</h5></a>
+                        <a href="api" class="card-link"><h5 class="card-title">Make queries</h5></a>
                     <h6 class="card-subtitle mb-2 text-muted">For organizations</h6>
                     <p class="card-text">Once more than 10 people submitted their data, organizations can make queries on the data set through this API, This demo page use the Statlog (German Credit Data) Data Set as the example.</p>
                 </div>
@@ -39,41 +39,109 @@
         </div>
     </div>
 
-    <h2>Process demonstration</h2>
+    <h2 style="margin-top: 30px; margin-bottom: 30px;">Process demonstration</h2>
     <div class="row">
         <div class="col-md-4">
-            <h3 class="text-center">Individual</h3>
+            <h3 class="text-center">Organization</h3>
             <div class="text-center">
-                <h4>1. submission</h4>
-                <a href="/demo/submission">submit a data here</a>
+                <div class="card step" id="step1">
+                    <div class="card-body">
+                        <h4 class="card-title">1. Create a form</h4>
+                        <p class="card-text">
+                            <p>
+                                Firstly, organizations create a form to specify what information they want to collect. In the case of the Statlog (German Credit Data) Data Set the form will look like <a href="statlog_contract">this</a>. 
+                            </p>
+                            {% if submission_data == null %}
+                            <input type="button" id="1next" value="next"/>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="card step" id="step5" style="display: none;">
+                    <div class="card-body">
+                    <h4>5. run algorithms</h4>
+                        <p>
+                            The organization can run the algorithm with the received non-sensitive data.
+                        </p>
+                        <p id="brief">
+                            account status: {{submission_data.account_status}}, duration: {{submission_data.duration}} ...
+                            <input type="button" id="see_details" value="see details">
+                        </p>
+                        <p id="details" style="display: none;">
+                            account status: {{submission_data.account_status}}, duration: {{submission_data.duration}}, credit history: {{submission_data.credit_history}}, 
+                            purpose: {{submission_data.purpose}}, credit amount: {{submission_data.credit_amount}}, savings account: {{submission_data.savings_account}}, 
+                            present employment since, {{submission_data.present_employment_since}}, installment rate in income: {{submission_data.installment_rate_in_income}}, 
+                            guarantors: {{submission_data.guarantors}}, present residence since: {{submission_data.present_residence_since}}, property: {{submission_data.property}}, 
+                            other installment plans: {{submission_data.other_installment_plans}}, housing: {{submission_data.housing}}, existing credits: {{submission_data.existing_credits}}, 
+                            job: {{submission_data.job}}, maintenance provider number: {{submission_data.maintenance_provider_number}}, telephone: {{submission_data.telephone}}, 
+                            foreign worker: {{submission_data.foreign_worker}} 
+                            <input type="button" id="hide_details" value="hide details"/>
+                        </p>
+                        <input type="button" id="predict" value="run algorithm" name="predict"/>
+                        <p id="result" style="display:none;"></p>
+                        <input type="button" id="5next" value="next"/>
+                    </div>
+                </div>
+                <div class="card step" id="step6" style="display: none;">
+                    <div class="card-body">
+                        <h4>6. Make queries</h4>
+                        <p>
+                            Lastly, the organization can <a href="api">make queries</a> once there are more than 10 people submitted their data. 
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" id="the_app">
             <h3 class="text-center">The DDP App</h3>
             <div class="text-center">
                 {% if submission_data != null %}
-                    <h4>2. save and preserve sensitive data</h4>    
-                    <p>marital status: {{ submission_data.personal_status_and_sex }}, age: {{ submission_data.age }}</p>
-                    <p>non-sensitive data is sent to the organization automatically</p>
+                <div class="card step" id="step2">
+                {% else %}
+                <div class="card step" id="step2" style="display: none;">
                 {% endif %}
+                    <div class="card-body">
+                        <h4>2. Finalize the form</h4>
+                        <p>
+                            The party of the DDP app will manually check the details of the form. If it looks good, the form will be released for individuals to submit, else the party of the app will communicate with the organization and make changes potentially.
+                        </p>
+                        {% if submission_data == null %}
+                        <input type="button" id="2next" value="next"/>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card step" id="step4" style="display: none;">
+                    <div class="card-body">
+                        <h4>4. save and preserve sensitive data</h4>
+                        <p>Once the app receive a form, the data will be saved, non-sensitive data will be sent to the organization automatically</p>
+                        <p>Sensitive information will be kept secret: marital status: {{ submission_data.personal_status_and_sex }}, age: {{ submission_data.age }}</p>
+                        <input type="button" id="4next" value="next"/>
+                    </div>
+                </div>
             </div>
             <br>
         </div>
         <div class="col-md-4">
-            <h3 class="text-center">Organization</h3>
+            <h3 class="text-center">Individual</h3>
             <div class="text-center">
-                {% if submission_data != null %} 
-                    <h4>3. run algorithm</h4>    
-                    <p>account status: {{submission_data.account_status}}, duration: {{submission_data.duration}}, credit history: {{submission_data.credit_history}}, 
-                    purpose: {{submission_data.purpose}}, credit amount: {{submission_data.credit_amount}}, savings account: {{submission_data.savings_account}}, 
-                    present employment since, {{submission_data.present_employment_since}}, installment rate in income: {{submission_data.installment_rate_in_income}}, 
-                    guarantors: {{submission_data.guarantors}}, present residence since: {{submission_data.present_residence_since}}, property: {{submission_data.property}}, 
-                    other installment plans: {{submission_data.other_installment_plans}}, housing: {{submission_data.housing}}, existing credits: {{submission_data.existing_credits}}, 
-                    job: {{submission_data.job}}, maintenance provider number: {{submission_data.maintenance_provider_number}}, telephone: {{submission_data.telephone}}, 
-                    foreign worker: {{submission_data.foreign_worker}} </p>
-                    <input type="button" id="predict" value="run algorithm" name="predict"/>
-                    <p id="result" style="display:none;"></p>
+                {% if submission_data != null %}
+                <div class="card step" id="step3">
+                {% else %}
+                <div class="card step" id="step3" style="display: none;">
                 {% endif %}
+                    <div class="card-body">
+                        <h4>3. submission</h4>
+                        <p>
+                            Once the form is released, individuals can submit a data with the form.
+                        </p>
+                        {% if submission_data != null %}
+                            <input type="button" id="3next" value="next"/>
+                        {% else %}
+                            <span><a href="submission?accept_return=true">submit a data</a> to go next</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

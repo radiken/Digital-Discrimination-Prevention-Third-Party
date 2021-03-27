@@ -1,32 +1,37 @@
 {% extends 'base.html' %}
 {% load static %} 
 {% block content %}
+
 <div class="container">
-    <h1>The API</h1>
+    <div class="title">
+        <h1>The API</h1>
+    </div>
     <p>
-        Data set information:<br>
-        Table name: experiments_statlog<br>
-        Columns: "account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
-        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker". <br>
-        Sensitive columns: "age", "personal_status_and_sex"<br>
-        Note: Details of column values of this demo data set please see https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data
-    </p>
-    <p>
-        Rules:<br> 
+        <h5>Rules</h5> 
         1. Queries must be select queries from the given table only.<br>
         2. Queries must be on the whole data set, i.e. keyword "LIMIT" is not allowed.<br>
         3. Queries must return a numeric result that is a statistical information, i.e. queries should contain functions like COUNT(), AVG(), SUM(), STDDEV(), VARIANCE().<br>
         4. "WHERE" conditions are allowed, but queries only returns a result when the sample set has more than 10 entries.<br>
         5. Query results are processed by the Laplace mechanism of differential privacy. COUNT() queries will be processed with epsilon 0.5, other queries will be processed with epsilon 1.0. 
     </p>
-    <form method="GET" action="api/result">
-        <input required class="form-control" name="query"/>
-        <input type="submit" value="query" id="submission"/>
-    </form>
     <p>
-        Examples:<br>
-        Querying the average age: SELECT AVG(age) FROM experiments_statlog <br>
-        Querying the number of people with over 200DM in their account (A13) and make a loan to buy new car (A40): SELECT COUNT(*) FROM experiments_statlog WHERE account_status="A13" and purpose="A40"
+        <h5>Data set information</h5>
+        <b>Table name:</b> experiments_statlog<br>
+        <b>Columns:</b> "account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker". <br>
+        <b>Sensitive columns:</b> "age", "personal_status_and_sex"<br>
+        <b>Note:</b> Details of column values of this demo data set please see https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data
     </p>
+
+    <h3 class="mt-5">Make a query</h3>
+    <form method="GET" action="api/result" class="row mt-5 justify-content-center">
+        <input required class="form-control col-9" name="query" style="border: 2px solid grey"/>
+        <input class="col-1 btn btn-info" type="submit" value="Go" id="submission"/>
+    </form>
+    <div class="mt-5">
+        <h5>Examples</h5>
+        Querying the average age: <br>SELECT AVG(age) FROM experiments_statlog <br><br>
+        Querying the number of people with over 200DM in their account (A13) and make a loan to buy new car (A40): <br>SELECT COUNT(*) FROM experiments_statlog WHERE account_status="A13" and purpose="A40"
+    </div>
 </div>
 {% endblock %}

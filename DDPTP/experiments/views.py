@@ -142,6 +142,9 @@ def run_experiments(request, *args, **kwargs):
         elif request.POST.get("action")=="run_e2_t2_c2":
             noise_sum = get_noise_n_times(100000, epsilon=0.5)
             ctx = {'noise_sum': noise_sum}
+        elif request.POST.get("action")=="run_e2_t2_customize":
+            noise_sum = get_noise_n_times(100000, epsilon=float(request.POST.get("epsilon")))
+            ctx = {'noise_sum': noise_sum}
         elif request.POST.get("action")=="run_e3_t1":
             rates_list = get_adult_models_sensitive_rates_from_experiments()
             ctx = {"original_zero_rates": rates_list[0], "original_one_rates": rates_list[1], "processed_zero_rates": rates_list[2], "processed_one_rates": rates_list[3], "abstracted_zero_rates": rates_list[4], "abstracted_one_rates": rates_list[5]}
@@ -175,16 +178,16 @@ def experiments_view(request, *args, **kwargs):
                                 moreover, it is sufficient and easier to control beta only through epsilon. Therefore, in this app, noise level equals to 1/epsilon. Thereby the chart on the right can be drawn showing the relationship between epsilon (x axis) and noise level (y axis).
                                 There is no standard about what noise level is too much, by intuition, this application considers epsilon=0.5, noise level=2 as the largest acceptable noise level (coresponds to the green line one the left).  ''',
         'e2_t1_title': "Test 1: Single query privacy level test",
-        'e2_t1_subtitle1': "continuous return queries in a large data set",
+        'e2_t1_subtitle1': "a). continuous return queries in a large data set",
         'e2_t1_description': "While providing an API to access certain level of the sensitive information, it is vital to ensure the result of the queries have high enough privacy level against differential attack.",
         'e2_t1_q1_description': "In the Statlog (German Credit Data) Data Set, we regard age as a sensitive information. Suppose the organization queries the average age.",
         'e2_t1_q2_description': "Now suppose there is a new entry of age 25, query the value again.",
         'e2_t1_description2': "Without differential privacy, the age of the new entry can be easily computed using the real values:",
         'e2_t1_description3': "Compute this with the processed values again:",
-        'e2_t1_subtitle2': "continuous return queries in a small data set",
+        'e2_t1_subtitle2': "b). continuous return queries in a small data set",
         'e2_t1_q3_description': "Differential privacy works well with data set of 1000 entries, now consider a smaller data set. Only take the first 10 entries of the Statlog (German Credit Data) Data Set:",
         'e2_t1_q4_description': "add 11th entry with age 25 and run the query again:",
-        'e2_t1_subtitle3': "\"How many\" queries:",
+        'e2_t1_subtitle3': "c). \"How many\" queries:",
         'e2_t1_q5_description': "This part tests the performance of differential privacy with queries that ask \"how many...\" questions, in this case the size of the data set does not matter, because no computation is necessary where the new entry can only affect the result by 0 or 1. Suppose the organization is querying the number of single male in the data set:",
         'e2_t1_q6_description': "Suppose another entries comes in that satisfy the requirement (he is a single male):",
         'e2_t1_description4': "Based on the mechanism of laplace differential privacy, the best guess one can do is: if the second result is larger than the first result, the new entry satisfies the requirement, else it doesn't. Try to make a guess:",
@@ -194,6 +197,7 @@ def experiments_view(request, *args, **kwargs):
         'e2_t2_description': "So far, individual's privacy seems to be safe, but there is one more things to test. The laplace machenism in differential privacy means the noise follows a laplace distribution, which means the expected noise is 0. If one makes the same queries many times, it is expected to have 0 noise when calculating the average.",
         'e2_t2_c1_description': "Run the differential privacy algorithm 100,000 times with epsilon=1 (applies in continuous return queries), only takes the noise and sum them up:",
         'e2_t2_c2_description': "Run 100,000 times with epsilon=0.5 (applies in \"how many\" question queries):",
+        'e2_t2_customize_description': "Try to run this experiment with another epsilon value:",
         'e2_t2_conclusion': "It seems in reality this is not a problem.",
         'e3_title': "3. Verification experiment",
         'e3_description': "This application attempts to verify the fairness of the decision-making algorithms by observing the distribution of the sensitive information in the classification result. The intuition is, if too many entries with the same sensitive attribute are classified to a same catogory, the algorithm is suspected to have the knowledge of that sensitive information.",

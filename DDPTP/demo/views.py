@@ -14,7 +14,7 @@ def about_view(request, *args, **kwargs):
 	return render(request, "about.html", {})
 
 def demo_index_view(request, *args, **kwargs):
-    if request.POST.get("submission"):
+    if request.POST.get("accept_return")=="True":
         context = {"submission_data": request.POST}
     else:
         context = {}
@@ -23,19 +23,21 @@ def demo_index_view(request, *args, **kwargs):
 def demo_contract_view(request, *args, **kwargs):
 	return render(request, "contract.html", {})
 
+def statlog_contract_view(request, *args, **kwargs):
+	return render(request, "statlog_contract.html", {})
+
 def individual_submission_view(request, *args, **kwargs):
-    result = ""
     form = Statlog_submission_form()
-    if request.method == "POST":
-    	form = Statlog_submission_form(request.POST)
-    if form.is_valid():
-        plain_data = form.cleaned_data
-        result = plain_data
+    accept_return = False
+    if request.method == 'GET':
+        if request.GET.get("accept_return") == "true":
+            accept_return = True
     texts = {
         'title': "A Company's Data Collection Form",
         'description': "Your data will be collected through the DDPTP, we cooperate with this company to ensure that you will be fairly treated by the company's decision-making algorithm. The information with the \"protected\" label will not be sent to the company."
+
     }
-    context = {'form': form, 'result': result, 'texts': texts}
+    context = {'form': form, 'texts': texts, 'accept_return': accept_return}
     return render(request, "submission.html", context)
 
 def demo_api_view(request, *args, **kwargs):

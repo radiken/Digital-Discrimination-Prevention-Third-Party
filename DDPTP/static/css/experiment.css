@@ -6,3 +6,61 @@ table, th, td {
 td {
     white-space: pre-line;
 }
+
+input[type="button"] {
+    margin-left: 10px;
+    background-color: royalblue;
+    transition-duration: 0.4s;
+    border-radius: 3px;
+    font-size: 16px;
+    border: 1px solid royalblue;
+    color: white;
+    padding: 5px 18px;
+}
+
+
+input[type="button"]:hover {
+    background-color: white;
+    color: black;
+}
+
+#run_e2_t2_customize {
+    margin-left: -3px;
+}
+
+div {
+    transition: opacity 0.5s linear, transform 0.5s linear;
+    opacity: 1;
+}
+
+div.hidden {
+    opacity: 0;
+    transform: scaleY(0);
+}
+
+.sub_experiment{
+    padding-left: 30px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-left: 5px solid royalblue;
+}
+
+.result{
+    padding-left: 30px;
+    margin-bottom: 20px;
+    border-left: 5px solid skyblue;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom:10px;
+}
+
+.customize{
+    padding-left: 30px;
+    margin-bottom: 20px;
+    border-left: 5px solid lightgreen;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom:10px;
+}

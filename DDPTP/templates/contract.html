@@ -1,45 +1,64 @@
 {% extends 'base.html' %}
 {% load static %} 
 {% block content %}
+<link rel="stylesheet" href="{% static '/css/contract.css' %}">
+
 <div class="container" style="width: 900px;">
+    <div class="title">
+        <h1>Form Creation</h1>
+    </div>
+    <p>
+        <b>Note: </b>Sensitive attributes are normally age, gender, race, income, marital status, location. Please attempt to justify the reason why an attribute is sensitive or non-sensitive where necessary.
+    </p>
     <form id="form" method="POST" action="index"> {% csrf_token %}
-        <label>Company name</label>
-        <input required class="form-control"/>
-        <label>Form description</label>
-        <textarea class="form-control" rows=3></textarea>
-        <input type="button" id="add_field" value="add a field" name="add_field"/>
-        <input type="submit" value="save" id="submission"/>
+        <div class="company_information" style="margin-bottom: 50px;">
+            <b>Company name</b>
+            <input required class="form-control"/>
+            <br>
+            <b>Form description</b>
+            <textarea class="form-control" rows=3></textarea>
+            <br>
+            <b>Business Email</b>
+            <input required class="form-control"/>
+        </div>
+        <hr/><br>
+        <input type="button" id="add_field" value="add a field" name="add_field" class="btn btn-info"/>
+        <input class="form-control btn btn-success mt-5" type="submit" value="save" id="submission"/>
     </form>
 </div>
 
 <div id="new_field" class="field" style="display: none;">
+    <h5>Basic information</h5>
     <div class="form-group">
-        <label>Field name</label>
+        <b>Field name</b>
         <input required class="form-control"/>
     </div>
     <div class="form-group">
-        <label>Field description</label>
+        <b>Field description</b>
         <textarea class="form-control" rows=3></textarea>
     </div>
-    <label>Field type</label>
+    <b>Field type</b>
     <select class="form-control field_type">
         <option value="text_field">text field</option>
         <option value="choice_field">choice field</option>
     </select>
     <div class="text_field_details">
+        <label>Text type</label>
         <select class="form-control field_type">
-            <label>text type</label>
             <option>numeric</option>
             <option>short string (one line text area)</option>
             <option>long string (multiple line text area)</option>
         </select>
     </div>
     <div class="choice_field_details" style="display: none;">
+        <label>Choices</label><br>
         <input placeholder='enter a choice' class='choice'>
         <input type='button' value='add a choice' class='add_choice'/>
     </div>
+    <br>
+    <h5>Is this sensitive?</h5>
     <div class="form-group">
-        <label>This a sensitive attribute</label>
+        <label>This is a sensitive attribute</label>
         <input type="checkbox" class="is_sensitive"/>
         <div class="sensitive_details" style="display: none;">
             <select class="form-control sensitive_type">
@@ -56,64 +75,13 @@
         <label>Any specific reasons?</label>
         <textarea class="form-control" rows=3 placeholder='Why it is or why it is not'></textarea>
     </div>
-    <input type="button" class="remove" value="remove field"/>
+    <input type="button" class="remove btn btn-danger" value="remove field"/>
 </div>
 
 <div id="new_choice" style="display: none;">
     <input placeholder='enter a choice' class='choice'>
     <input type="button" class="remove" value="remove choice"/>
 </div>
-<script>
-$("#add_field").click(function() {
-    $("#new_field").clone(true).insertBefore("form > input:last-child").attr("id", "").show();
-});
 
-$(".remove").click(function() {
-    $(this).parent().remove();
-});
-
-$(".field_type").change(function(){
-    if($(this).val()=="choice_field"){
-        $(this).next().hide();
-        $(this).next().next().show();
-    }
-    if($(this).val()=="text_field"){
-        $(this).next().show();
-        $(this).next().next().hide();
-    }
-});
-
-$(".add_choice").click(function() {
-    $("#new_choice").clone(true).insertBefore($(this)).attr("id", "").show();
-});
-
-$(function() {
-    $(".is_sensitive").change(function()
-    {
-    if ($(this).is(':checked')){
-        $(this).next().show();
-    }
-    else{
-        $(this).next().hide();
-    }
-    });
-});
-
-$(".sensitive_type").change(function(){
-    if($(this).val()=="hide"){
-        $(this).next().hide();
-    }
-    if($(this).val()=="abstract"){
-        $(this).next().show();
-    }
-});
-
-$("#submission").click(function() {
-    if($('.field').length <= 1){
-        alert("You have to create at least one field!");
-        $("#form").attr("action", "");
-    }
-});
-
-</script>
+<script type="text/javascript" src="{% static '/js/contract.js' %}"></script>
 {% endblock %}

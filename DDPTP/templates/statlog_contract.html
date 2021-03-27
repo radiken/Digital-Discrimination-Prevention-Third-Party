@@ -1,0 +1,628 @@
+{% extends 'base.html' %}
+{% load static %} 
+{% block content %}
+<link rel="stylesheet" href="{% static '/css/contract.css' %}">
+
+<div class="container" style="width: 900px;">
+    <div class="title">
+        <h1>Record of a company's form creation request (read only)</h1>
+    </div>
+    <form id="form" method="POST" action="index"> {% csrf_token %}
+        <b>Company name</b>
+        <input readonly required class="form-control" value="Statlog (German Credit Data) Data Set"/>
+        <br>
+        <b>Form description</b>
+        <textarea readonly class="form-control" rows=3>The form is to collect individuals' credit data and use an algorithm to classify whether they are good customers or bad customers.</textarea readonly>
+        <br>
+        <b>Business Email</b>
+        <input readonly required class="form-control" value="************"/>
+        <br>
+    </form>
+    <hr/><br>
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Account status"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3>Status of existing checking account</textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="Less than 0 DM" class='choice'>
+            <input readonly value="0 to 200 DM" class='choice'>
+            <input readonly value="Greater than 200 DM" class='choice'>
+            <input readonly value="No checking account" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3>Although this information is normally sensitive, it is an important and reasonable reference considering this is a credit data form.</textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Duration"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3>Duration in month</textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Credit history"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="no credit taken/all credits paid back duly" class='choice'>
+            <input readonly value="all credits at this bank paid back duly" class='choice'>
+            <input readonly value="existing credits paid back duly till now" class='choice'>
+            <input readonly value="delay in paying off in the past" class='choice'>
+            <input readonly value="critical account/other credits existing (not at this bank)" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Purpose"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="car (new)" class='choice'>
+            <input readonly value="car (used)" class='choice'>
+            <input readonly value="furniture/equipment" class='choice'>
+            <input readonly value="radio/television" class='choice'>
+            <input readonly value="domestic appliances" class='choice'>
+            <input readonly value="repairs" class='choice'>
+            <input readonly value="education" class='choice'>
+            <input readonly value="vacation" class='choice'>
+            <input readonly value="retraining" class='choice'>
+            <input readonly value="business" class='choice'>
+            <input readonly value="others" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Credit amount"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Savings account"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="Less than 100 DM" class='choice'>
+            <input readonly value="100 to 500 DM" class='choice'>
+            <input readonly value="500 to 1000 DM" class='choice'>
+            <input readonly value="Greater than 1000 DM" class='choice'>
+            <input readonly value="unknown/ no savings account" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Savings account"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="Less than 1 year" class='choice'>
+            <input readonly value="1 to 4 years" class='choice'>
+            <input readonly value="4 to 7 years" class='choice'>
+            <input readonly value="Greater than 7 years" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Installment rate in income"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3>Installment rate in percentage of disposable income</textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="personal_status_and_sex"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="Male, divorced/separated" class='choice'>
+            <input readonly value="Female, divorced/separated/married" class='choice'>
+            <input readonly value="Male, single" class='choice'>
+            <input readonly value="Male, married/widowed" class='choice'>
+            <input readonly value="Female, single" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive" checked/>
+            <div class="sensitive_details">
+                <select readonly class="form-control sensitive_type">
+                    <label>I think I want to </label>
+                    <option value="hide" selected>hide this </option>
+                    <option value="abstract">abstract this </option>
+                </select>
+            </div>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3>The algorithm should not make decision base on people's personal status and gender.</textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Guarantors"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="None" class='choice'>
+            <input readonly value="Co-applicant" class='choice'>
+            <input readonly value="Guarantor" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Present residence since"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Property"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="real estate" class='choice'>
+            <input readonly value="building society savings agreement/life insurance" class='choice'>
+            <input readonly value="car or other" class='choice'>
+            <input readonly value="unknown / no property" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="age"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive" checked/>
+            <div class="sensitive_details">
+                <select readonly class="form-control sensitive_type">
+                    <label>I think I want to </label>
+                    <option value="hide" selected>hide this </option>
+                    <option value="abstract">abstract this </option>
+                </select>
+            </div>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3>Age is normally considered sensitive and there is no need to consider individuals' age in this case. However it is in the form for business purposes.
+            </textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Other installment plans"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="Bank" class='choice'>
+            <input readonly value="Stores" class='choice'>
+            <input readonly value="None" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Housing"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="Rant" class='choice'>
+            <input readonly value="Own" class='choice'>
+            <input readonly value="For free" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Existing credit"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3>Number of existing credits at this bank</textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Job"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="unemployed/ unskilled - non-resident" class='choice'>
+            <input readonly value="unskilled - resident" class='choice'>
+            <input readonly value="skilled employee / official" class='choice'>
+            <input readonly value="management/ self-employed/highly qualified employee/ officer" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Maintenance provider number"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3>Number of people being liable to provide maintenance for</textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field" selected>text field</option>
+        </select>
+        <div class="text_field_details">
+            <select readonly class="form-control field_type">
+                <label>text type</label>
+                <option selected>numeric</option>
+                <option>short string (one line text area)</option>
+                <option>long string (multiple line text area)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Telephone"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="none" class='choice'>
+            <input readonly value="yes, registered under the customers name" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="form-group">
+            <label>Field name</label>
+            <input readonly required class="form-control" value="Foreign worker"/>
+        </div>
+        <div class="form-group">
+            <label>Field description</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+        <label>Field type</label>
+        <select readonly class="form-control field_type">
+            <option value="text_field">text field</option>
+            <option value="choice_field" selected>choice field</option>
+        </select>
+        <div class="choice_field_details">
+            <input readonly value="yes" class='choice'>
+            <input readonly value="no" class='choice'>
+        </div>
+        <div class="form-group">
+            <label>This a sensitive attribute</label>
+            <input readonly type="checkbox" onclick="return false;" class="is_sensitive"/>
+            <br>
+            <label>Any specific reasons?</label>
+            <textarea readonly class="form-control" rows=3></textarea readonly>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

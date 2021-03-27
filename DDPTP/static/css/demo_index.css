@@ -1,3 +1,52 @@
 .card{
-    min-height: 260px;
+    min-height: 265px;
+    animation: fadein 1.2s;
+}
+
+.step{
+    border: 0px;
+}
+
+#the_app{
+    border-left: 1px dotted green;
+    border-right: 1px dotted green;
+}
+
+input[type="button"] {
+    background-color: #4CAF50;
+    transition-duration: 0.4s;
+    border-radius: 4px;
+    font-size: 16px;
+    border: 1px solid #4CAF50;
+    color: white;
+    padding: 5px 18px;
+}
+
+#predict {
+    background-color: #4285F4;
+    border: 1px solid #4285F4;
+}
+
+#see_details {
+    background-color: white;
+    color: #4285F4;
+    font-size: 16px;
+    border: 0px;
+}
+
+#hide_details {
+    background-color: white;
+    color: #4285F4;
+    font-size: 16px;
+    border: 0px;
+}
+
+input[type="button"]:hover {
+    background-color: white;
+    color: black;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }

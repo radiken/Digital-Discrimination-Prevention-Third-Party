@@ -5,42 +5,46 @@
 <link rel="stylesheet" href="{% static '/css/experiment.css' %}">
 
 <div class="container">
-    <br>
-    <h1>experiments</h1>
-    <br>
+    <div class="title">
+        <h1>Experiments</h1>
+    </div>
     <div id="e1">
         <h2>{{ texts.e1_title }}</h2>
         <p>{{ texts.e1_description }}</p>
-        <div class="inline-headers">
-            <span>{{ texts.e1_dataset1 }}</span> 
-            <input class="d-inline" type="button" id="run_e1_d1" name="run_e1_d1" value="run model" />
-        </div>
-        <div id="e1_d1_result" style="display: none;">
-            <span>{{ texts.e1_d1_description1 }}</span> 
-            <br>
-            score: <span id="e1_d1_original_score"></span>
-            <br>
-            <span>{{ texts.e1_d1_description2 }}</span> 
-            <br>
-            score: <span id="e1_d1_processed_score"></span>
+        <div class="sub_experiment">
+            <div class="inline-headers">
+                <b>{{ texts.e1_dataset1 }}</b> 
+                <input class="d-inline" type="button" id="run_e1_d1" name="run_e1_d1" value="Run" />
+            </div>
+            <div id="e1_d1_result" class="result" style="display: none;">
+                <span>{{ texts.e1_d1_description1 }}</span> 
+                <br>
+                score: <span id="e1_d1_original_score"></span>
+                <br>
+                <span>{{ texts.e1_d1_description2 }}</span> 
+                <br>
+                score: <span id="e1_d1_processed_score"></span>
+            </div>
         </div>
         <br>
-        <div class="inline-headers">
-            <span>{{ texts.e1_dataset2 }}</span> 
-            <input class="d-inline" type="button" id="run_e1_d2" name="run_e1_d2" value="run model" />
-        </div>
-        <div id="e1_d2_result" style="display: none;">
-            <span>{{ texts.e1_d2_description1 }}</span>
-            <br>
-            score: <span id="e1_d2_original_score"></span>
-            <br>
-            <span>{{ texts.e1_d2_description2 }}</span> 
-            <br>
-            score: <span id="e1_d2_processed_score"></span>
-            <br>
-            <span>{{ texts.e1_dataset2_abstraction_description }}</span>
-            <br>
-            processed and abstracted score: <span id="e1_d2_abstracted_score"></span>
+        <div class="sub_experiment">
+            <div class="inline-headers">
+                <b>{{ texts.e1_dataset2 }}</b> 
+                <input class="d-inline" type="button" id="run_e1_d2" name="run_e1_d2" value="Run" />
+            </div>
+            <div id="e1_d2_result" class="result" style="display: none;">
+                <span>{{ texts.e1_d2_description1 }}</span>
+                <br>
+                score: <span id="e1_d2_original_score"></span>
+                <br>
+                <span>{{ texts.e1_d2_description2 }}</span> 
+                <br>
+                score: <span id="e1_d2_processed_score"></span>
+                <br>
+                <span>{{ texts.e1_dataset2_abstraction_description }}</span>
+                <br>
+                score: <span id="e1_d2_abstracted_score"></span>
+            </div>
         </div>
     </div>
     <hr/>
@@ -59,175 +63,204 @@
         <div id="e2_t1">
             <span class="h3 d-inline">{{ texts.e2_t1_title }}</span>
             <p>{{ texts.e2_t1_description }}</p>
-            <h4>{{ texts.e2_t1_subtitle1 }}</h4>
-            <div id="e2_t1_q1">
-                <span>{{ texts.e2_t1_q1_description }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_q1" name="run_e2_t1_q1" value="run query" />
-                <div id="e2_t1_q1_result" style="display: none;">
-                    number of instance in the database: <span id="e2_t1_q1_count"></span>
-                    <br>
-                    result (processed by DP algorithm): <span id="e2_t1_q1_processed_result"></span>
-                    <br>
-                    real result (not available to the organization): <span id="e2_t1_q1_original_result">****</span>
-                    <input class="d-inline" type="button" id="show_e2_t1_q1" name="show_e2_t1_q1" value="show" />
+            <div class="sub_experiment">
+                <h4>{{ texts.e2_t1_subtitle1 }}</h4>
+                <div id="e2_t1_q1">
+                    <span>{{ texts.e2_t1_q1_description }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_q1" name="run_e2_t1_q1" value="Run" />
+                    <div id="e2_t1_q1_result" class="result" style="display: none;">
+                        number of instance in the database: <span id="e2_t1_q1_count"></span>
+                        <br>
+                        result (processed by DP algorithm): <span id="e2_t1_q1_processed_result"></span>
+                        <br>
+                        real result (not available to the organization): <span id="e2_t1_q1_original_result">****</span>
+                        <input class="d-inline" type="button" id="show_e2_t1_q1" name="show_e2_t1_q1" value="Show" />
+                    </div>
+                </div>
+                <div id="e2_t1_q2" style="display: none;">
+                    <span>{{ texts.e2_t1_q2_description }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_q2" name="run_e2_t1_q2" value="Run" />
+                    <div id="e2_t1_q2_result" class="result" style="display: none;">
+                        number of instance in the database: <span id="e2_t1_q2_count"></span>
+                        <br>
+                        result (processed by DP algorithm): <span id="e2_t1_q2_processed_result"></span>
+                        <br>
+                        real result (not available to the organization): <span id="e2_t1_q2_original_result">****</span>
+                        <input class="d-inline" type="button" id="show_e2_t1_q2" name="show_e2_t1_q2" value="Show" />
+                    </div>
+                </div>
+                <div id="e2_t1_c12" style="display: none;">
+                    <div>
+                        <span>{{ texts.e2_t1_description2 }}</span>
+                        <input class="d-inline" type="button" id="run_e2_t1_c1" name="run_e2_t1_c1" value="Compute" />
+                        <p class="result" id="e2_t1_c1_result" style="display: none;"></p>
+                    </div>
+                    <div>
+                        <span>{{ texts.e2_t1_description3 }}</span>
+                        <input class="d-inline" type="button" id="run_e2_t1_c2" name="run_e2_t1_c2" value="Compute" />
+                        <p class="result" id="e2_t1_c2_result" style="display: none;"></p>
+                    </div>
                 </div>
             </div>
-            <div id="e2_t1_q2">
-                <span>{{ texts.e2_t1_q2_description }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_q2" name="run_e2_t1_q2" value="run query" />
-                <div id="e2_t1_q2_result" style="display: none;">
-                    number of instance in the database: <span id="e2_t1_q2_count"></span>
-                    <br>
-                    result (processed by DP algorithm): <span id="e2_t1_q2_processed_result"></span>
-                    <br>
-                    real result (not available to the organization): <span id="e2_t1_q2_original_result">****</span>
-                    <input class="d-inline" type="button" id="show_e2_t1_q2" name="show_e2_t1_q2" value="show" />
+            <div class="sub_experiment">
+                <h4>{{ texts.e2_t1_subtitle2 }}</h4>
+                <div id="e2_t1_q3">
+                    <span>{{ texts.e2_t1_q3_description }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_q3" name="run_e2_t1_q3" value="Run" />
+                    <div id="e2_t1_q3_result" class="result" style="display: none;">
+                        number of instance in the database: <span id="e2_t1_q3_count"></span>
+                        <br>
+                        result (processed by DP algorithm): <span id="e2_t1_q3_processed_result"></span>
+                        <br>
+                        real result (not available to the organization): <span id="e2_t1_q3_original_result">****</span>
+                        <input class="d-inline" type="button" id="show_e2_t1_q3" name="show_e2_t1_q3" value="Show" />
+                    </div>
+                </div>
+                <div id="e2_t1_q4" style="display: none;">
+                    <span>{{ texts.e2_t1_q4_description }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_q4" name="run_e2_t1_q4" value="Run" />
+                    <div id="e2_t1_q4_result" class="result" style="display: none;">
+                        number of instance in the database: <span id="e2_t1_q4_count"></span>
+                        <br>
+                        result (processed by DP algorithm): <span id="e2_t1_q4_processed_result"></span>
+                        <br>
+                        real result (not available to the organization): <span id="e2_t1_q4_original_result">****</span>
+                        <input class="d-inline" type="button" id="show_e2_t1_q4" name="show_e2_t1_q4" value="Show" />
+                    </div>
+                </div>
+                <div id="e2_t1_c34" style="display: none;">
+                    <div>
+                        <span>{{ texts.e2_t1_description2 }}</span>
+                        <input class="d-inline" type="button" id="run_e2_t1_c3" name="run_e2_t1_c3" value="Compute" />
+                        <p id="e2_t1_c3_result" class="result" style="display: none;"></p>
+                    </div>
+                    <div>
+                        <span>{{ texts.e2_t1_description3 }}</span>
+                        <input class="d-inline" type="button" id="run_e2_t1_c4" name="run_e2_t1_c4" value="Compute" />
+                        <p id="e2_t1_c4_result" class="result" style="display: none;"></p>
+                    </div>
                 </div>
             </div>
-            <div id="e2_t1_c12" style="display: none;">
-                <span>{{ texts.e2_t1_description2 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c1" name="run_e2_t1_c1" value="compute" />
-                <p id="e2_t1_c1_result"></p>
-                <span>{{ texts.e2_t1_description3 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c2" name="run_e2_t1_c2" value="compute" />
-                <p id="e2_t1_c2_result"></p>
-            </div>
-            <h4>{{ texts.e2_t1_subtitle2 }}</h4>
-            <div id="e2_t1_q3">
-                <span>{{ texts.e2_t1_q3_description }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_q3" name="run_e2_t1_q3" value="run query" />
-                <div id="e2_t1_q3_result" style="display: none;">
-                    number of instance in the database: <span id="e2_t1_q3_count"></span>
-                    <br>
-                    result (processed by DP algorithm): <span id="e2_t1_q3_processed_result"></span>
-                    <br>
-                    real result (not available to the organization): <span id="e2_t1_q3_original_result">****</span>
-                    <input class="d-inline" type="button" id="show_e2_t1_q3" name="show_e2_t1_q3" value="show" />
+            <div class="sub_experiment">
+                <h4>{{ texts.e2_t1_subtitle3 }}</h4>
+                <div id="e2_t1_q5">
+                    <span>{{ texts.e2_t1_q5_description }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_q5" name="run_e2_t1_q5" value="Run" />
+                    <div id="e2_t1_q5_result" class="result"  style="display: none;">
+                        result (processed by DP algorithm): <span id="e2_t1_q5_processed_result"></span>
+                        <br>
+                        real result (not available to the organization): <span id="e2_t1_q5_original_result">****</span>
+                        <input class="d-inline" type="button" id="show_e2_t1_q5" name="show_e2_t1_q5" value="Show" />
+                    </div>
                 </div>
-            </div>
-            <div id="e2_t1_q4">
-                <span>{{ texts.e2_t1_q4_description }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_q4" name="run_e2_t1_q4" value="run query" />
-                <div id="e2_t1_q4_result" style="display: none;">
-                    number of instance in the database: <span id="e2_t1_q4_count"></span>
-                    <br>
-                    result (processed by DP algorithm): <span id="e2_t1_q4_processed_result"></span>
-                    <br>
-                    real result (not available to the organization): <span id="e2_t1_q4_original_result">****</span>
-                    <input class="d-inline" type="button" id="show_e2_t1_q4" name="show_e2_t1_q4" value="show" />
+                <div id="e2_t1_q6" style="display: none;">
+                    <span>{{ texts.e2_t1_q6_description }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_q6" name="run_e2_t1_q6" value="Run" />
+                    <div id="e2_t1_q6_result" class="result" style="display: none;">
+                        result (processed by DP algorithm): <span id="e2_t1_q6_processed_result"></span>
+                        <br>
+                        real result (not available to the organization): <span id="e2_t1_q6_original_result">****</span>
+                        <input class="d-inline" type="button" id="show_e2_t1_q6" name="show_e2_t1_q6" value="Show" />
+                    </div>
                 </div>
-            </div>
-            <div id="e2_t1_c34" style="display: none;">
-                <span>{{ texts.e2_t1_description2 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c3" name="run_e2_t1_c3" value="compute" />
-                <p id="e2_t1_c3_result"></p>
-                <span>{{ texts.e2_t1_description3 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c4" name="run_e2_t1_c4" value="compute" />
-                <p id="e2_t1_c4_result"></p>
-            </div>
-            <h4>{{ texts.e2_t1_subtitle3 }}</h4>
-            <div id="e2_t1_q5">
-                <span>{{ texts.e2_t1_q5_description }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_q5" name="run_e2_t1_q5" value="run query" />
-                <div id="e2_t1_q5_result" style="display: none;">
-                    result (processed by DP algorithm): <span id="e2_t1_q5_processed_result"></span>
+                <div id="e2_t1_c567" style="display: none;">
+                    <div>
+                        <span>{{ texts.e2_t1_description4 }}</span>
+                        <input class="d-inline" type="button" id="run_e2_t1_c5" name="run_e2_t1_c5" value="Guess" />
+                        <p id="e2_t1_c5_result" class="result" style="display: none;"></p>
+                    </div>
+                    <span>{{ texts.e2_t1_description5 }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_c6" name="run_e2_t1_c6" value="Run 1000 times" />
+                    <p id="e2_t1_c6_result" class="result" style="display: none;"></p>
                     <br>
-                    real result (not available to the organization): <span id="e2_t1_q5_original_result">****</span>
-                    <input class="d-inline" type="button" id="show_e2_t1_q5" name="show_e2_t1_q5" value="show" />
+                    <span>{{ texts.e2_t1_description6 }}</span>
+                    <input class="d-inline" type="button" id="run_e2_t1_c7" name="run_e2_t1_c7" value="Run 1000 times" />
+                    <p id="e2_t1_c7_result" class="result" style="display: none;"></p>
                 </div>
-            </div>
-            <div id="e2_t1_q6">
-                <span>{{ texts.e2_t1_q6_description }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_q6" name="run_e2_t1_q6" value="run query" />
-                <div id="e2_t1_q6_result" style="display: none;">
-                    result (processed by DP algorithm): <span id="e2_t1_q6_processed_result"></span>
-                    <br>
-                    real result (not available to the organization): <span id="e2_t1_q6_original_result">****</span>
-                    <input class="d-inline" type="button" id="show_e2_t1_q6" name="show_e2_t1_q6" value="show" />
-                </div>
-            </div>
-            <div id="e2_t1_c567" style="display: none;">
-                <span>{{ texts.e2_t1_description4 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c5" name="run_e2_t1_c5" value="guess" />
-                <p id="e2_t1_c5_result"></p>
-                <span>{{ texts.e2_t1_description5 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c6" name="run_e2_t1_c6" value="run 1000 times" />
-                <p id="e2_t1_c6_result"></p>
-                <span>{{ texts.e2_t1_description6 }}</span>
-                <input class="d-inline" type="button" id="run_e2_t1_c7" name="run_e2_t1_c7" value="run 1000 times" />
-                <p id="e2_t1_c7_result"></p>
             </div>
         </div>
         <br>
-        <div id="e2_t2">
+        <div id="e2_t2" class="sub_experiment">
             <span class="h3 d-inline">{{ texts.e2_t2_title }}</span>
             <p>{{ texts.e2_t2_description }}</p>
             <span>{{ texts.e2_t2_c1_description }}</span>
-            <input class="d-inline" type="button" id="run_e2_t2_c1" name="run_e2_t2_c1" value="compute" />
-            <span id="e2_t2_c1_result"></span>
+            <input class="d-inline" type="button" id="run_e2_t2_c1" name="run_e2_t2_c1" value="Compute" />
+            <div id="e2_t2_c1_result" class="result" style="display: none;"></div>
             <br>
             <span>{{ texts.e2_t2_c2_description }}</span>
-            <input class="d-inline" type="button" id="run_e2_t2_c2" name="run_e2_t2_c2" value="compute" />
-            <span id="e2_t2_c2_result"></span>
+            <input class="d-inline" type="button" id="run_e2_t2_c2" name="run_e2_t2_c2" value="Compute" />
+            <div id="e2_t2_c2_result" class="result" style="display: none;"></div>
+            <div id="e2_t2_customize" class="customize">
+                <h4>Customize</h4>
+                <p>{{ texts.e2_t2_customize_description }}</p>
+                <span>epsilon = </span>
+                <input id="e2_t2_customize_input"/>
+                <input type="button" id="run_e2_t2_customize" name="run_e2_t2_customize" value="Compute" />
+                <p id="e2_t2_customize_result" class="result" style="display: none;"></p>
+            </div>
         </div>
     </div>
     <hr/>
     <div id="e3">
         <h2>{{ texts.e3_title }}</h2>
         <p>{{ texts.e3_description }}</p>
-        <div id="e3_t1">
+        <div id="e3_t1" class="sub_experiment">
             <h3>{{ texts.e3_t1_title }}</h3>
             <p>{{ texts.e3_t1_description }}</p>
-            <input class="d-inline" type="button" id="run_e3_t1" name="run_e3_t1" value="run models" />
-            <table style="width:100%;">
-                <tr>
-                    <th>model</th>
-                    <th>marital status</th>
-                    <th>sex</th>
-                    <th>race</th>
-                    <th>native country</th>
-                </tr>
-                <tr>
-                    <td>model 1</td>
-                    <td id="e3_t1_m1_marital_status"></td>
-                    <td id="e3_t1_m1_sex"></td>
-                    <td id="e3_t1_m1_race"></td>
-                    <td id="e3_t1_m1_native_country"></td>
-                </tr>
-                <tr>
-                    <td>model 2</td>
-                    <td id="e3_t1_m2_marital_status"></td>
-                    <td id="e3_t1_m2_sex"></td>
-                    <td id="e3_t1_m2_race"></td>
-                    <td id="e3_t1_m2_native_country"></td>
-                </tr>
-                <tr>
-                    <td>model 3</td>
-                    <td id="e3_t1_m3_marital_status"></td>
-                    <td id="e3_t1_m3_sex"></td>
-                    <td id="e3_t1_m3_race"></td>
-                    <td id="e3_t1_m3_native_country"></td>
-                </tr>
-            </table>
+            <input class="d-inline" type="button" id="run_e3_t1" name="run_e3_t1" value="Run" />
+            <div class="result" style="display:none;">
+                <table id="e3_t1_result" style="width:100%;">
+                    <tr>
+                        <th>model</th>
+                        <th>marital status</th>
+                        <th>sex</th>
+                        <th>race</th>
+                        <th>native country</th>
+                    </tr>
+                    <tr>
+                        <td>model 1</td>
+                        <td id="e3_t1_m1_marital_status"></td>
+                        <td id="e3_t1_m1_sex"></td>
+                        <td id="e3_t1_m1_race"></td>
+                        <td id="e3_t1_m1_native_country"></td>
+                    </tr>
+                    <tr>
+                        <td>model 2</td>
+                        <td id="e3_t1_m2_marital_status"></td>
+                        <td id="e3_t1_m2_sex"></td>
+                        <td id="e3_t1_m2_race"></td>
+                        <td id="e3_t1_m2_native_country"></td>
+                    </tr>
+                    <tr>
+                        <td>model 3</td>
+                        <td id="e3_t1_m3_marital_status"></td>
+                        <td id="e3_t1_m3_sex"></td>
+                        <td id="e3_t1_m3_race"></td>
+                        <td id="e3_t1_m3_native_country"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
-        <div id="e3_t2">
+        <div id="e3_t2" class="sub_experiment">
             <h3>{{ texts.e3_t2_title }}</h3>
             <p>{{ texts.e3_t2_description }}</p>
-            <input class="d-inline" type="button" id="run_e3_t2" name="run_e3_t2" value="run models" />
-            <table style="width:100%;">
-                <tr>
-                    <th>model</th>
-                    <th>marital status and sex</th>
-                </tr>
-                <tr>
-                    <td>model 1</td>
-                    <td id="e3_t2_m1_marital_status_and_sex"></td>
-                </tr>
-                <tr>
-                    <td>model 2</td>
-                    <td id="e3_t2_m2_marital_status_and_sex"></td>
-                </tr>
-            </table>
+            <input class="d-inline" type="button" id="run_e3_t2" name="run_e3_t2" value="Run" />
+            <div class="result" style="display: none;">
+                <table  id="e3_t2_result" style="width:100%;">
+                    <tr>
+                        <th>model</th>
+                        <th>marital status and sex</th>
+                    </tr>
+                    <tr>
+                        <td>model 1</td>
+                        <td id="e3_t2_m1_marital_status_and_sex"></td>
+                    </tr>
+                    <tr>
+                        <td>model 2</td>
+                        <td id="e3_t2_m2_marital_status_and_sex"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
