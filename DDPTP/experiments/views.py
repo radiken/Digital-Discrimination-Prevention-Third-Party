@@ -1,7 +1,6 @@
 from django.shortcuts import render
 import experiments.experiments
 from .experiments import *
-from .models import Adult_original
 from .models import Adult_test
 from .models import Statlog
 from django.db import connection
@@ -112,6 +111,11 @@ def run_experiments(request, *args, **kwargs):
         elif request.POST.get("action")=="run_e1_d2":
             original_score, processed_score, abstracted_score = adult_prediction()
             ctx = {'adult_original_score': original_score, 'adult_processed_score': processed_score, 'adult_abstracted_score': abstracted_score}
+        elif request.POST.get("action")=="run_e1_d2_customize":
+            classifier = request.POST.get("classifier")
+            actions = json.loads(request.POST.get("actions"))
+            metrics = customize_statlog_predition(classifier, actions)
+            ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e2_t1_q1":
             count, original_result, dp_result = get_statlog_avg_age()
             ctx = {'count': count, 'original_result': original_result, 'dp_result': dp_result}
@@ -169,6 +173,8 @@ def experiments_view(request, *args, **kwargs):
         'e1_d2_description1': "Predict the test set with model that use all the information as inputs:",
         'e1_d2_description2': "Take out the information of \"sex\" \"race\", \"native country\" and \"marital status\" from inputs:",
         'e1_dataset2_abstraction_description': "Apart from removing the sensitive data, abstraction is also an option. In this example, abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife), predict the test set again:",
+        'e1_d2_customize_description': "Remove or abstract any attribute you want. \nAt the moment, you can abstract continuous attribute to 2 groups and discrete attribute to 3 groups.",
+        'e1_d2_customize_s3_description': "Note: The decision tree classifier involves randomness, result may be different each time.",
         'e2_title': "2. Differential privacy experiment",
         'e2_description': "This experiment demostrate the performance of adding noise to the results of numeric queries. Results of this experiment proves it is save to provide an API to the organization end to query information about the sensitive data.",
         'e2_charts_title': "Premise",
@@ -209,9 +215,33 @@ def experiments_view(request, *args, **kwargs):
     }
     figures = epsilon_and_noise_level_chart_figures()
     figures.insert(0, ["epsilon", "noise level"])
+    statlog_attributes = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
+    statlog_discrete_values = {
+        "account_status": {"A11": "Less than 0 DM", "A12": "0 to 200 DM", "A13": "Greater than 200 DM", "A14": "No checking account"},
+        "credit_history": {"A30": "no credits taken/all credits paid back duly", "A31": "all credits at this bank paid back duly", "A32": "existing credits paid back duly till now", "A33": "delay in paying off in the past", "A34": "critical account/other credits existing (not at this bank)"},
+        "purpose": {"A40": "car(new)", "A41": "car(used)", "A42": "furniture/equipment", "A43": "radio/television", "A44": "domestic appliances", "A45": "repairs", "A46": "education", "A48": "retraining", "A49": "business", "A410": "others"},
+        "savings_account": {"A61": "Less than 100 DM", "A62": "100 to 500 DM", "A63": "500 to 1000 DM", "A64": "Greater than 1000 DM", "A65": "Unknown/no saving account"},
+        "present_employment_since": {"A71": "Unemployed", "A72": "Less than 1 year", "A73": "1 to 4 years", "A74": "4 to 7 years", "A75": "More than 7 years"},
+        "personal_status_and_sex": {"A91": "Male, divorced/separated", "A92": "Female, divorced/separated/married", "A93": "Male, single", "A94": "Male, married/widowed", "A95": "Female, single"},
+        "guarantors": {"A101": "None", "A102": "Co-applicant", "A103": "guarantor"},
+        "property": {"A121": "Real estate", "A122": "Building society savings agreement/life insurance", "A123": "Car or other", "A124": "Unknown/no property"}, 
+        "other_installment_plans": {"A141": "Bank", "A142": "Stores", "A143": "None"},
+        "housing": {"A151": "Rent", "A152": "Own", "A153": "For free"},
+        "job": {"A171": "Unemployed/ unskilled  - non-resident", "A172": "Unskilled - resident", "A173": "Skilled employee/official", "A174": "Management/self-employed/highly qualified employee/officer"},
+        "telephone": {"A191": "None", "A192": "Yes, registered under the customers name"},
+        "foreign_worker": {"A201": "Yes", "A202": "No"}
+    }
+    e1_d2_customize_classifiers = {
+        "decision_tree": "Decision tree",
+        "GaussianNB": "Gaussian naive bayes"
+    }
     my_context = {
 		'texts': texts,
-        'epsilon_and_noise': figures
+        'epsilon_and_noise': figures,
+        'statlog_attributes': statlog_attributes,
+        'statlog_discrete_values': statlog_discrete_values,
+        'e1_d2_customize_classifiers': e1_d2_customize_classifiers
 	}
     return render(request, "experiments.html", my_context)
 

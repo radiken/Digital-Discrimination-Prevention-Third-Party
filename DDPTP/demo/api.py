@@ -33,7 +33,7 @@ def make_query(query):
 
 def check_query(query, table_name):
     lowered_query = query.lower()
-    if any(keyword in lowered_query for keyword in ("limit", "join", "insert", "update", "delete", " on ")):
+    if any(keyword in lowered_query for keyword in ("limit", "join", "insert", "update", "delete", " on ", "result")):
         return False
     if "select" and table_name in lowered_query:
         if any(keyword in lowered_query for keyword in ("count", "sum", "avg", "stddev", "variance")):
@@ -54,4 +54,4 @@ def query_demo():
     import urllib.parse
     encoded_query = urllib.parse.quote_plus(query)
     url = "thediscriminationfreemodel.uk/demo/api/result?query="+encoded_query
-    # TODO: Test after deployment
+    # TODO: Test after deployment 

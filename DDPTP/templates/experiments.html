@@ -25,6 +25,72 @@
                 <br>
                 score: <span id="e1_d1_processed_score"></span>
             </div>
+            <div id="e1_d2_customize" class="customize">
+                <h4>Customize</h4>
+                <p>{{ texts.e1_d2_customize_description }}</p>
+                <input type="button" value="Start" id="e1_d2_customize_control"/>
+                <div class="container" id="e1_d2_customize_content" style="display: none;">
+                    <div id="e1_d2_customize_content">
+                        <h5>1. Select attributes</h5>
+                        <div id="e1_d2_customize_s1" class="container row">
+                            {% for attribute in statlog_attributes %}
+                            <div class="col-6">
+                                <label>{{attribute}}</label>
+                                <select class="process_options">
+                                    <option value="non-sensitive">Non-sensitive</option>
+                                    <option value="abstract">Sensitive(Abstract)</option>
+                                    <option value="remove">Sensitive(Remove)</option>
+                                </select>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div id="e1_d2_customize_s2" class="container">
+                            {% for attribute in statlog_attributes %}
+                                <div id="{{attribute}}" class="abstraction_options" style="display: none;">
+                                    <b>{{attribute}} abstraction options</b>
+                                </div>
+                            {% endfor %}
+                            <div id="continuous_abstraction" style="display: none;">
+                                <div>
+                                    <b>Group 1</b>
+                                    <span>Less than </span><input class="continuous_abstraction_c1" style="width: 40px;"/>
+                                </div>
+                                <div>
+                                    <b>Group 2</b>
+                                    <span>Greater than or equal to </span><span class="continuous_abstraction_cn">___(Auto fill in)</span>
+                                </div>
+                            </div>
+                            {% for attribute, value_dict in statlog_discrete_values.items %}
+                                <div id="{{attribute}}_abstraction" style="display: none;">
+                                    {% for code, value in value_dict.items %}
+                                        <span>{{value}}</span>
+                                        <select id="{{code}}">
+                                            <option value="isolate">Isolate</option>
+                                            <option value="g1">Group 1</option>
+                                            <option value="g2">Group 2</option>
+                                            <option value="g3">Group 3</option>
+                                        </select>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <h5>2. Select classifier</h5>
+                        <div id="e1_d2_customize_s3" class="container">
+                            <select id="e1_d2_customize_classifier">
+                                {% for key, value in e1_d2_customize_classifiers.items %}
+                                <option value="{{key}}">{{value}}</option>
+                                {% endfor %}
+                            </select>
+                            <p>{{ texts.e1_d2_customize_s3_description }}</p>
+                        </div>
+                        <input class="d-inline" type="button" id="run_e1_d2_customize" name="run_e1_d2_customize" value="Confirm" />
+                        <div id="e1_d2_customize_result" style="display: none;">
+                            <h5>Result</h5>
+                            <span id="e1_d2_customize_result_metrics"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <br>
         <div class="sub_experiment">
@@ -92,12 +158,12 @@
                 <div id="e2_t1_c12" style="display: none;">
                     <div>
                         <span>{{ texts.e2_t1_description2 }}</span>
-                        <input class="d-inline" type="button" id="run_e2_t1_c1" name="run_e2_t1_c1" value="Compute" />
+                        <input class="d-inline" type="button" id="run_e2_t1_c1" name="run_e2_t1_c1" value="Run" />
                         <p class="result" id="e2_t1_c1_result" style="display: none;"></p>
                     </div>
                     <div>
                         <span>{{ texts.e2_t1_description3 }}</span>
-                        <input class="d-inline" type="button" id="run_e2_t1_c2" name="run_e2_t1_c2" value="Compute" />
+                        <input class="d-inline" type="button" id="run_e2_t1_c2" name="run_e2_t1_c2" value="Run" />
                         <p class="result" id="e2_t1_c2_result" style="display: none;"></p>
                     </div>
                 </div>
@@ -131,12 +197,12 @@
                 <div id="e2_t1_c34" style="display: none;">
                     <div>
                         <span>{{ texts.e2_t1_description2 }}</span>
-                        <input class="d-inline" type="button" id="run_e2_t1_c3" name="run_e2_t1_c3" value="Compute" />
+                        <input class="d-inline" type="button" id="run_e2_t1_c3" name="run_e2_t1_c3" value="Run" />
                         <p id="e2_t1_c3_result" class="result" style="display: none;"></p>
                     </div>
                     <div>
                         <span>{{ texts.e2_t1_description3 }}</span>
-                        <input class="d-inline" type="button" id="run_e2_t1_c4" name="run_e2_t1_c4" value="Compute" />
+                        <input class="d-inline" type="button" id="run_e2_t1_c4" name="run_e2_t1_c4" value="Run" />
                         <p id="e2_t1_c4_result" class="result" style="display: none;"></p>
                     </div>
                 </div>
@@ -184,19 +250,21 @@
             <span class="h3 d-inline">{{ texts.e2_t2_title }}</span>
             <p>{{ texts.e2_t2_description }}</p>
             <span>{{ texts.e2_t2_c1_description }}</span>
-            <input class="d-inline" type="button" id="run_e2_t2_c1" name="run_e2_t2_c1" value="Compute" />
+            <input class="d-inline" type="button" id="run_e2_t2_c1" name="run_e2_t2_c1" value="Run" />
             <div id="e2_t2_c1_result" class="result" style="display: none;"></div>
             <br>
             <span>{{ texts.e2_t2_c2_description }}</span>
-            <input class="d-inline" type="button" id="run_e2_t2_c2" name="run_e2_t2_c2" value="Compute" />
+            <input class="d-inline" type="button" id="run_e2_t2_c2" name="run_e2_t2_c2" value="Run" />
             <div id="e2_t2_c2_result" class="result" style="display: none;"></div>
             <div id="e2_t2_customize" class="customize">
                 <h4>Customize</h4>
-                <p>{{ texts.e2_t2_customize_description }}</p>
-                <span>epsilon = </span>
-                <input id="e2_t2_customize_input"/>
-                <input type="button" id="run_e2_t2_customize" name="run_e2_t2_customize" value="Compute" />
-                <p id="e2_t2_customize_result" class="result" style="display: none;"></p>
+                <div class="container">
+                    <p>{{ texts.e2_t2_customize_description }}</p>
+                    <span>epsilon = </span>
+                    <input id="e2_t2_customize_input"/>
+                    <input type="button" id="run_e2_t2_customize" name="run_e2_t2_customize" value="Run" />
+                    <p id="e2_t2_customize_result" class="result" style="display: none;"></p>
+                </div>
             </div>
         </div>
     </div>

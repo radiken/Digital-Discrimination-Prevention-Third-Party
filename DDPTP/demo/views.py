@@ -61,10 +61,10 @@ def predict(request, *args, **kwargs):
                 data[key] = value[0]
             result = statlog_prediction(data)
             result = int(result)
-            if result==0:
-                result = "bad costomer"
+            if result==1:
+                result = "Good costomer"
             else:
-                result = "good costomer"
+                result = "Bad costomer"
             ctx = {'result': result}
         else:
             ctx = {}

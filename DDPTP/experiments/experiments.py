@@ -1,5 +1,6 @@
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
+from sklearn.svm import SVC
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -7,19 +8,162 @@ from sklearn import preprocessing
 import pickle
 from DP_library import laplace
 import numpy as np
+from .models import Adult_original
+from .models import Adult_test
+from .models import Statlog
+
+statlog_data = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker")
+statlog_result = Statlog.objects.values_list("result")
+adult_train_x = Adult_original.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+adult_train_y = Adult_original.objects.values_list("income")
+adult_test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
+adult_test_y = Adult_test.objects.values_list("income")
 
 '''
 Experiment 1
 Test whether excluding the sensitive data affect the effectiveness of the decision making algorithm
 This experiment use supervised learning classifiers to predict the income of individuals
 '''
+
+''' 
+param: 
+    classifier: a string of the machine learning classifier to use. Available choices: decision_tree, SVC, GaussianNB
+    actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': ['<10', ' in range(10, 50)', '>=50'], 'account_status':[["A11", "A12"], ["A13", "A14"]]}
+'''
+def customize_statlog_predition(classifier, actions):
+    x = pd.DataFrame(statlog_data)
+    y = statlog_result
+    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
+    
+
+    original_train_x, original_test_x, train_y, test_y = train_test_split(x, list(y), test_size=0.33, shuffle=False)
+
+    processed_train_x = preprocess_data(original_train_x, actions)
+    processed_test_x = preprocess_data(original_test_x, actions)
+
+    # one hot encode
+    to_encode = ["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"]
+    one_hot_original_train_x = pd.get_dummies(original_train_x, columns=to_encode)
+    one_hot_original_test_x = pd.get_dummies(original_test_x, columns=to_encode)
+    # see what attributes to encode for processed_x
+    continuous_attributes = ["duration", "credit_amount", "installment_rate_in_income", "present_residence_since", "age", "existing_credits", "maintenance_provider_number"]
+    for key in actions.keys():
+        if key in continuous_attributes:
+            to_encode.append(key)
+        if actions[key]=="remove":
+            to_encode.remove(key)
+    one_hot_processed_train_x = pd.get_dummies(processed_train_x, columns=to_encode)
+    one_hot_processed_test_x = pd.get_dummies(processed_test_x, columns=to_encode)
+
+    if classifier == "decision_tree":
+        original_clf = tree.DecisionTreeClassifier()
+        processed_clf = tree.DecisionTreeClassifier()
+    elif classifier == "SVC":
+        original_clf = SVC()
+        processed_clf = SVC()
+    elif classifier == "GaussianNB":
+        original_clf = GaussianNB()
+        processed_clf = GaussianNB()
+    else:
+        raise Exception("classifier error")
+    original_clf.fit(one_hot_original_train_x, train_y)
+    original_score = original_clf.score(one_hot_original_test_x, test_y)
+    original_result = original_clf.predict(one_hot_original_test_x)
+    
+    processed_clf.fit(one_hot_processed_train_x, train_y)
+    processed_score = processed_clf.score(one_hot_processed_test_x, test_y)
+    processed_result = processed_clf.predict(one_hot_processed_test_x)
+
+    sex_original_metrics = get_result_metrics(original_test_x, original_result, test_y, "personal_status_and_sex", ["A91", "A93", "A94"], ["A92", "A95"], 1, 2)
+    sex_processed_metrics = get_result_metrics(original_test_x, processed_result, test_y, "personal_status_and_sex", ["A91", "A93", "A94"], ["A92", "A95"], 1, 2)
+    age_original_metrics = get_result_metrics(original_test_x, original_result, test_y, "age", "<=37", ">=38", 1, 2)
+    age_processed_metrics = get_result_metrics(original_test_x, processed_result, test_y, "age", "<=37", ">=38", 1, 2)
+    metrics = [original_score, processed_score, sex_original_metrics, sex_processed_metrics, age_original_metrics, age_processed_metrics]
+    metrics = [n.round(2) for n in metrics]
+    return metrics
+
+
+# get the metrics that evaluate the discrimination level
+# privileged_group and unprivileged_group are lists(discrete value) or strings(continuous values)
+def get_result_metrics(test_x, prediction, real_result, attribute_name, privileged_value, unprivileged_value, privileged_group, unprivileged_group):
+    test_x['prediction'] = prediction
+    if isinstance(privileged_value, list):
+        privileged_df = test_x.loc[test_x[attribute_name].isin(privileged_value)]
+        unprivileged_df = test_x.loc[test_x[attribute_name].isin(unprivileged_value)]
+    elif isinstance(privileged_value, str):
+        privileged_df = test_x.loc[eval("test_x[attribute_name]" + privileged_value), :]
+        unprivileged_df = test_x.loc[eval("test_x[attribute_name]" + unprivileged_value), :]
+    privileged_rates = privileged_df['prediction'].value_counts(normalize=True)
+    privileged_rates = privileged_rates.round(2)
+    privileged_rate = privileged_rates.get(key=privileged_group)
+
+    unprivileged_rates = unprivileged_df['prediction'].value_counts(normalize=True)
+    unprivileged_rates = unprivileged_rates.round(2)
+    unprivileged_rate = unprivileged_rates.get(key=unprivileged_group)
+
+    statistical_parity_difference = unprivileged_rate-privileged_rate
+    return statistical_parity_difference
+
+''' 
+Process a training set by either remove it abstract the attributes according to the actions
+param: 
+    x: a dataframe of training data
+    actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': {'young_age': '<10', 'middle_age': ' in range(10, 50)', 'older_age': '>=50'}, 'account_status': {'husband-or-wife': ["A11", "A12"], ["A13", "A14"]}}
+'''
+def preprocess_data(x, actions):
+    processed_x = x.copy()
+    for attribute, action in actions.items():
+        if action == "remove":
+            processed_x = processed_x.drop(columns=[attribute])
+        else:
+            if isinstance(action, list):
+                # generate group name and match values
+                group_number = 1
+                groups = {}
+                for group in action:
+                    # ensure the value is treated as number in the dataframe
+                    group_name = "group"+str(group_number)
+                    groups[group_name] = group
+                    group_number = group_number + 1
+            elif isinstance(action, dict):
+                # the groups have given names
+                groups = action
+            else:
+                raise Exception("values in actions must be list or dict")
+            # abstract the attribute
+            if isinstance(list(groups.items())[0][1], list):
+                # it's discrete data
+                for i, row in processed_x.iterrows():
+                    value = processed_x.at[i, attribute]
+                    for group_name, values in groups.items():
+                        if value in values:
+                            processed_x.at[i, attribute] = group_name
+                            break
+            else:
+                # it's continuous data
+                for i, row in processed_x.iterrows():
+                    value = processed_x.at[i, attribute]
+                    for group_name, condition in groups.items():
+                        if eval(str(value) + condition):
+                            # at method works more efficient, but it doesn't work for the german data set for unknown reason
+                            # loc produce same results but with lower efficiency
+                            try:
+                                processed_x.at[i, attribute] = group_name
+                            except:
+                                processed_x.loc[i, attribute] = group_name
+                            break
+    return processed_x
+                            
 def statlog_prediction_experiment(x, y):
     x = pd.DataFrame(x)
     x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
         "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
 
     # remove sensitive information in the processed training set
-    processed_x = x.drop(columns=["personal_status_and_sex", "age"])
+    processed_x = preprocess_data(x, {"personal_status_and_sex": "remove", "age": "remove"})
 
     # one hot encode
     original_x = pd.get_dummies(x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
@@ -41,7 +185,6 @@ def statlog_prediction_experiment(x, y):
 
     return original_score, processed_score
     
-    
 
 def adult_prediction_experiment(test_x, test_y):
     # preprocess data
@@ -54,37 +197,33 @@ def adult_prediction_experiment(test_x, test_y):
 
     # remove with gender, race, native country and marital status for the processed data
     test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
-    processed_test_x = test_x.drop(columns=['marital_status', 'race', 'sex', 'native_country'])
+    processed_test_x = preprocess_data(test_x, {"marital_status": "remove", "race": "remove", "sex": "remove", "native_country": "remove"})
     # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife)
-    abstracted_test_x = processed_test_x.copy()
-    for i in range(len(abstracted_test_x)):
-        age = abstracted_test_x.at[i, 'age']
-        if age <= 35:
-            abstracted_test_x.at[i, 'age'] = "young_age"
-        elif 36 <= age <= 55:
-            abstracted_test_x.at[i, 'age'] = "middle_age"
-        else:
-            abstracted_test_x.at[i, 'age'] = "older_age"
-
-        relationship = abstracted_test_x.at[i, 'relationship']
-        if relationship == 'Husband' or relationship == 'Wife':
-            abstracted_test_x.at[i, 'relationship'] = "Husband-or-wife"
+    age_abstract = {
+        "young_age": "<=35",
+        "middle_age": " in range(36, 56)",
+        "older_age": ">=56"
+    }
+    relationship_abstract = {
+        "Husband-or-wife": ["Husband", "Wife"]
+    }
+    abstracted_test_x = preprocess_data(processed_test_x, {"age": age_abstract, "relationship": relationship_abstract})
 
     # one hot encode
     le = preprocessing.LabelEncoder()
     test_y = le.fit_transform(test_y)
-    test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
+    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
     processed_test_x = pd.get_dummies(processed_test_x, columns=['workclass', 'education', 'occupation', 'relationship'])
     abstracted_test_x = pd.get_dummies(abstracted_test_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
 
     # match columns(features)
     original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
-    original_missing_columns = set(original_columns) - set(test_x.columns)
+    original_missing_columns = set(original_columns) - set(original_test_x.columns)
     for column in original_missing_columns:
-        test_x[column] = 0
-    test_x = test_x[original_columns]
+        original_test_x[column] = 0
+    original_test_x = original_test_x[original_columns]
 
-    original_score = load_model_and_score(test_x, test_y, "original_decision_tree")
+    original_score = load_model_and_score(original_test_x, test_y, "original_decision_tree")
     processed_score = load_model_and_score(processed_test_x, test_y, "processed_decision_tree")
     abstracted_score = load_model_and_score(abstracted_test_x, test_y, "abstracted_decision_tree")
 
@@ -154,7 +293,7 @@ def get_adult_models_sensitive_rates(test_x):
 
     # match columns(features)
     original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
-    original_missing_columns = set(original_columns) - set(test_x.columns)
+    original_missing_columns = set(original_columns) - set(original_test_x.columns)
     for column in original_missing_columns:
         original_test_x[column] = 0
     original_test_x = original_test_x[original_columns]
