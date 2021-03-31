@@ -37,7 +37,6 @@ def customize_statlog_predition(classifier, actions):
     x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
         "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
     
-
     original_train_x, original_test_x, train_y, test_y = train_test_split(x, list(y), test_size=0.33, shuffle=False)
 
     processed_train_x = preprocess_data(original_train_x, actions)
@@ -71,41 +70,139 @@ def customize_statlog_predition(classifier, actions):
         raise Exception("classifier error")
     original_clf.fit(one_hot_original_train_x, train_y)
     original_score = original_clf.score(one_hot_original_test_x, test_y)
+    original_score = original_score.round(2)
     original_result = original_clf.predict(one_hot_original_test_x)
     
     processed_clf.fit(one_hot_processed_train_x, train_y)
     processed_score = processed_clf.score(one_hot_processed_test_x, test_y)
+    processed_score = processed_score.round(2)
     processed_result = processed_clf.predict(one_hot_processed_test_x)
 
+    test_y = [i[0] for i in test_y]
     sex_original_metrics = get_result_metrics(original_test_x, original_result, test_y, "personal_status_and_sex", ["A91", "A93", "A94"], ["A92", "A95"], 1, 2)
     sex_processed_metrics = get_result_metrics(original_test_x, processed_result, test_y, "personal_status_and_sex", ["A91", "A93", "A94"], ["A92", "A95"], 1, 2)
+    sex_metrics = list(zip(sex_original_metrics, sex_processed_metrics))
     age_original_metrics = get_result_metrics(original_test_x, original_result, test_y, "age", "<=37", ">=38", 1, 2)
     age_processed_metrics = get_result_metrics(original_test_x, processed_result, test_y, "age", "<=37", ">=38", 1, 2)
-    metrics = [original_score, processed_score, sex_original_metrics, sex_processed_metrics, age_original_metrics, age_processed_metrics]
-    metrics = [n.round(2) for n in metrics]
+    age_metrics = list(zip(age_original_metrics, age_processed_metrics))
+    scores = [original_score, processed_score]
+    metrics = [scores, sex_metrics, age_metrics]
     return metrics
 
+def adult_prediction():
+    # preprocess data
+    train_x = pd.DataFrame(list(adult_train_x))
+    test_x = pd.DataFrame(list(adult_test_x))
+
+    # handle missing values
+    imp = SimpleImputer(missing_values="?", strategy="most_frequent")
+    train_x = pd.DataFrame(imp.fit_transform(train_x))
+    test_x = pd.DataFrame(imp.fit_transform(test_x))
+
+    train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
+    test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
+    # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife) and remove gender, race, native country and marital status
+    age_abstract = {"young_age": "<=35", "middle_age": " in range(36, 56)", "older_age": ">=56"}
+    relationship_abstract = {"Husband-or-wife": ["Husband", "Wife"]}
+    actions = {"marital_status": "remove", "race": "remove", "sex": "remove", "native_country": "remove", "age": age_abstract, "relationship": relationship_abstract}
+    processed_train_x = preprocess_data(train_x, actions)
+    processed_test_x = preprocess_data(test_x, actions)
+
+    # one hot encode
+    le = preprocessing.LabelEncoder()
+    train_y = le.fit_transform(adult_train_y)
+    test_y = le.fit_transform(adult_test_y)
+    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
+    processed_train_x = pd.get_dummies(processed_train_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
+    processed_test_x = pd.get_dummies(processed_test_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
+
+    # match columns(features)
+    original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
+    original_missing_columns = set(original_columns) - set(original_test_x.columns)
+    for column in original_missing_columns:
+        original_test_x[column] = 0
+    original_test_x = original_test_x[original_columns]
+
+    original_result = load_model_and_predict('original_decision_tree', original_test_x)
+    original_score = load_model_and_score(original_test_x, test_y, 'original_decision_tree')
+    clf = GaussianNB()
+    clf.fit(processed_train_x, train_y)
+    processed_result = clf.predict(processed_test_x)
+    processed_score = clf.score(processed_test_x, test_y)
+
+    sex_original_metrics = get_result_metrics(test_x, original_result, test_y, "sex", ["Male"], ["Female"], 1, 0)
+    sex_processed_metrics = get_result_metrics(test_x, processed_result, test_y, "sex", ["Male"], ["Female"], 1, 0)
+    sex_metrics = list(zip(sex_original_metrics, sex_processed_metrics))
+    race_original_metrics = get_result_metrics(test_x, original_result, test_y, "race", ["White"], ["Black", "Asian-Pac-Islander", "Amer-Indian-Eskimo", "Other"], 1, 0)
+    race_processed_metrics = get_result_metrics(test_x, processed_result, test_y, "race", ["White"], ["Black", "Asian-Pac-Islander", "Amer-Indian-Eskimo", "Other"], 1, 0)
+    race_metrics = list(zip(race_original_metrics, race_processed_metrics))
+    scores = [original_score, processed_score]
+    scores = [round(x,2) for x in scores]
+    metrics = [scores, sex_metrics, race_metrics]
+    return metrics
 
 # get the metrics that evaluate the discrimination level
 # privileged_group and unprivileged_group are lists(discrete value) or strings(continuous values)
 def get_result_metrics(test_x, prediction, real_result, attribute_name, privileged_value, unprivileged_value, privileged_group, unprivileged_group):
     test_x['prediction'] = prediction
+    test_x['real_result'] = real_result
     if isinstance(privileged_value, list):
         privileged_df = test_x.loc[test_x[attribute_name].isin(privileged_value)]
         unprivileged_df = test_x.loc[test_x[attribute_name].isin(unprivileged_value)]
     elif isinstance(privileged_value, str):
         privileged_df = test_x.loc[eval("test_x[attribute_name]" + privileged_value), :]
         unprivileged_df = test_x.loc[eval("test_x[attribute_name]" + unprivileged_value), :]
-    privileged_rates = privileged_df['prediction'].value_counts(normalize=True)
-    privileged_rates = privileged_rates.round(2)
-    privileged_rate = privileged_rates.get(key=privileged_group)
+    statistical_parity_difference = get_statistical_parity_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group)
+    equal_opportunity_difference = get_equal_opportunity_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group)
+    average_odds_difference = get_average_odds_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group)
+    disparate_impact = get_disparate_impact(privileged_df, unprivileged_df, privileged_group, unprivileged_group)
 
+    metrics = [statistical_parity_difference, equal_opportunity_difference, average_odds_difference, disparate_impact]
+    metrics = [round(n, 2) for n in metrics]
+    return metrics
+
+def get_statistical_parity_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group):
+    privileged_rates = privileged_df['prediction'].value_counts(normalize=True)
+    privileged_rate = privileged_rates.get(key=privileged_group)
     unprivileged_rates = unprivileged_df['prediction'].value_counts(normalize=True)
-    unprivileged_rates = unprivileged_rates.round(2)
-    unprivileged_rate = unprivileged_rates.get(key=unprivileged_group)
+    unprivileged_rate = unprivileged_rates.get(key=privileged_group)
 
     statistical_parity_difference = unprivileged_rate-privileged_rate
     return statistical_parity_difference
+
+def get_equal_opportunity_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group):
+    privileged_actual_positive_df = privileged_df.loc[privileged_df['real_result']==privileged_group]
+    privileged_true_positive_df = privileged_actual_positive_df.loc[privileged_actual_positive_df['prediction']==privileged_group]
+    unprivileged_actual_positive_df = unprivileged_df.loc[unprivileged_df['real_result']==privileged_group]
+    unprivileged_true_positive_df = unprivileged_actual_positive_df.loc[unprivileged_actual_positive_df['prediction']==privileged_group]
+    privileged_true_positive_rate = len(privileged_true_positive_df)/len(privileged_actual_positive_df)
+    unprivileged_true_positive_rate = len(unprivileged_true_positive_df)/len(unprivileged_actual_positive_df)
+
+    equal_opportunity_difference = unprivileged_true_positive_rate-privileged_true_positive_rate
+    return equal_opportunity_difference
+
+def get_average_odds_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group):
+    privileged_actual_negative_df = privileged_df.loc[privileged_df['real_result']==unprivileged_group]
+    privileged_false_positive_df = privileged_actual_negative_df.loc[privileged_actual_negative_df['prediction']==privileged_group]
+    privileged_false_positive_rate = len(privileged_false_positive_df)/len(privileged_actual_negative_df)
+    unprivileged_actual_negative_df = unprivileged_df.loc[unprivileged_df['real_result']==unprivileged_group]
+    unprivileged_false_positive_df = unprivileged_actual_negative_df.loc[unprivileged_actual_negative_df['prediction']==privileged_group]
+    unprivileged_false_positive_rate = len(unprivileged_false_positive_df)/len(unprivileged_actual_negative_df)
+    false_positive_difference = unprivileged_false_positive_rate - privileged_false_positive_rate
+
+    true_positive_difference = get_equal_opportunity_difference(privileged_df, unprivileged_df, privileged_group, unprivileged_group)
+
+    average_odds_difference = (false_positive_difference + true_positive_difference) / 2
+    return average_odds_difference
+
+def get_disparate_impact(privileged_df, unprivileged_df, privileged_group, unprivileged_group):
+    privileged_rates = privileged_df['prediction'].value_counts(normalize=True)
+    privileged_rate = privileged_rates.get(key=privileged_group)
+    unprivileged_rates = unprivileged_df['prediction'].value_counts(normalize=True)
+    unprivileged_rate = unprivileged_rates.get(key=privileged_group)
+
+    disparate_impact = unprivileged_rate / privileged_rate
+    return disparate_impact
 
 ''' 
 Process a training set by either remove it abstract the attributes according to the actions
@@ -156,78 +253,6 @@ def preprocess_data(x, actions):
                                 processed_x.loc[i, attribute] = group_name
                             break
     return processed_x
-                            
-def statlog_prediction_experiment(x, y):
-    x = pd.DataFrame(x)
-    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
-        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
-
-    # remove sensitive information in the processed training set
-    processed_x = preprocess_data(x, {"personal_status_and_sex": "remove", "age": "remove"})
-
-    # one hot encode
-    original_x = pd.get_dummies(x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
-        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
-    processed_x = pd.get_dummies(processed_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
-        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
-
-    # the statlog dataset is small, no need to save and load model each time
-    original_train_x, original_test_x, original_train_y, original_test_y = train_test_split(original_x, list(y), test_size=0.33, random_state=11)
-    processed_train_x, processed_test_x, processed_train_y, processed_test_y = train_test_split(processed_x, list(y), test_size=0.33, random_state=11)
-
-    original_clf = tree.DecisionTreeClassifier()
-    original_clf.fit(original_train_x, original_train_y)
-    original_score = original_clf.score(original_test_x, original_test_y)
-
-    processed_clf = tree.DecisionTreeClassifier()
-    processed_clf.fit(processed_train_x, processed_train_y)
-    processed_score = processed_clf.score(processed_test_x, processed_test_y)
-
-    return original_score, processed_score
-    
-
-def adult_prediction_experiment(test_x, test_y):
-    # preprocess data
-    test_x = pd.DataFrame(list(test_x))
-    test_y = list(test_y)
-
-    # handle missing values
-    imp = SimpleImputer(missing_values="?", strategy="most_frequent")
-    test_x = pd.DataFrame(imp.fit_transform(test_x))
-
-    # remove with gender, race, native country and marital status for the processed data
-    test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
-    processed_test_x = preprocess_data(test_x, {"marital_status": "remove", "race": "remove", "sex": "remove", "native_country": "remove"})
-    # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife)
-    age_abstract = {
-        "young_age": "<=35",
-        "middle_age": " in range(36, 56)",
-        "older_age": ">=56"
-    }
-    relationship_abstract = {
-        "Husband-or-wife": ["Husband", "Wife"]
-    }
-    abstracted_test_x = preprocess_data(processed_test_x, {"age": age_abstract, "relationship": relationship_abstract})
-
-    # one hot encode
-    le = preprocessing.LabelEncoder()
-    test_y = le.fit_transform(test_y)
-    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
-    processed_test_x = pd.get_dummies(processed_test_x, columns=['workclass', 'education', 'occupation', 'relationship'])
-    abstracted_test_x = pd.get_dummies(abstracted_test_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
-
-    # match columns(features)
-    original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
-    original_missing_columns = set(original_columns) - set(original_test_x.columns)
-    for column in original_missing_columns:
-        original_test_x[column] = 0
-    original_test_x = original_test_x[original_columns]
-
-    original_score = load_model_and_score(original_test_x, test_y, "original_decision_tree")
-    processed_score = load_model_and_score(processed_test_x, test_y, "processed_decision_tree")
-    abstracted_score = load_model_and_score(abstracted_test_x, test_y, "abstracted_decision_tree")
-
-    return original_score, processed_score, abstracted_score
 
 def load_model_and_score(test_x, test_y, file_name):
     loaded_model = pickle.load(open('ml_models/'+file_name, 'rb'))

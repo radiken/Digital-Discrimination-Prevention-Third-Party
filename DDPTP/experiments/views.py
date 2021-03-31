@@ -8,24 +8,6 @@ from django.http import HttpResponse
 from DP_library import laplace
 import json
 
-
-'''
-Experiment 1: prediction experiment
-Test whether excluding the sensitive data affect the effectiveness of the decision making algorithm
-This experiment use decision tree classifier to predict the income of individuals (the adult dataset) and the type of customers (the german dataset)
-'''
-def statlog_prediction():
-    x = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
-        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker")
-    y = Statlog.objects.values_list("result")
-    return statlog_prediction_experiment(x, y)
-
-def adult_prediction():
-    # train classifier with the original data
-    test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
-    test_y = Adult_test.objects.values_list("income")
-    return adult_prediction_experiment(test_x, test_y)
-
 '''
 Experiment 2: differential privacy performance experiment
 Test the performance of differential privacy with the above two datasets
@@ -106,14 +88,15 @@ def get_statlog_models_sensitive_rates_from_experiments():
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
         if request.POST.get("action")=="run_e1_d1":
-            original_score, processed_score = statlog_prediction()
-            ctx = {'statlog_original_score': original_score, 'statlog_processed_score': processed_score}
+            metrics = customize_statlog_predition("GaussianNB", {"age": "remove", "personal_status_and_sex": "remove", 'duration': 'remove', 'account_status': {'g2': ['A11', 'A14'], 'g1': ['A12', 'A13']}})
+            ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e1_d2":
-            original_score, processed_score, abstracted_score = adult_prediction()
-            ctx = {'adult_original_score': original_score, 'adult_processed_score': processed_score, 'adult_abstracted_score': abstracted_score}
+            metrics = adult_prediction()
+            ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e1_d2_customize":
             classifier = request.POST.get("classifier")
             actions = json.loads(request.POST.get("actions"))
+            print(actions)
             metrics = customize_statlog_predition(classifier, actions)
             ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e2_t1_q1":
@@ -164,7 +147,7 @@ def run_experiments(request, *args, **kwargs):
 
 def experiments_view(request, *args, **kwargs):
     texts = {
-        'e1_title' : "1. Prediction experiment",
+        'e1_title' : "1. Discrimination Experiment",
         'e1_description' : "This experiment aims to prove that classifiers can have good performance without some sensitive input. We observe the result by controlling the inputs of decision tree classifiers on two real-world data sets.",
         'e1_dataset1' : "Statlog (German Credit Data) Data Set",
         'e1_d1_description1': "Predict the test set with model that use all the information from inputs:",
@@ -175,7 +158,7 @@ def experiments_view(request, *args, **kwargs):
         'e1_dataset2_abstraction_description': "Apart from removing the sensitive data, abstraction is also an option. In this example, abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife), predict the test set again:",
         'e1_d2_customize_description': "Remove or abstract any attribute you want. \nAt the moment, you can abstract continuous attribute to 2 groups and discrete attribute to 3 groups.",
         'e1_d2_customize_s3_description': "Note: The decision tree classifier involves randomness, result may be different each time.",
-        'e2_title': "2. Differential privacy experiment",
+        'e2_title': "2. Privacy Experiment",
         'e2_description': "This experiment demostrate the performance of adding noise to the results of numeric queries. Results of this experiment proves it is save to provide an API to the organization end to query information about the sensitive data.",
         'e2_charts_title': "Premise",
         'e2_charts_description': '''Differential privacy is a tradeoff between privacy level(noise level) and data availability. The larger the noise is, the less accurate and meaningful the data is. 

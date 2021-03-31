@@ -41,16 +41,15 @@ function hide_or_show(event){
 }
 
 $('#run_e1_d1').click({action: "run_e1_d1", csrf_token: $('#csrf_token').val(), on_success: function(response){
-    $('#e1_d1_original_score').text(response.statlog_original_score);
-    $('#e1_d1_processed_score').text(response.statlog_processed_score);
+    $('#e1_d1_result_scores').text("Original: "+response.metrics[0][0]+"; Customized: "+response.metrics[0][1]);
+    draw_e1_d1_metrics(response.metrics);
     $('#e1_d1_result').show('fast');
     $('#run_e1_d1').val('Run again');
 }}, run_query);
 
 $('#run_e1_d2').click({action: "run_e1_d2", csrf_token: $('#csrf_token').val(), on_success: function(response){
-    $('#e1_d2_original_score').text(response.adult_original_score);
-    $('#e1_d2_processed_score').text(response.adult_processed_score);
-    $('#e1_d2_abstracted_score').text(response.adult_abstracted_score);
+    $('#e1_d2_result_scores').text("Original: "+response.metrics[0][0]+"; Customized: "+response.metrics[0][1]);
+    draw_e1_d2_metrics(response.metrics);
     $('#e1_d2_result').show('fast');
     $('#run_e1_d2').val('Run again');
 }}, run_query);
@@ -284,9 +283,15 @@ $('#run_e1_d2_customize').click(function(){
         data: {'action': 'run_e1_d2_customize', 'csrfmiddlewaretoken': $('#csrf_token').val(), 'classifier': classifier, 'actions': JSON.stringify(e1_d2_customize_options)},
         dataType: "json",
         success: function(response) {
-            $('#e1_d2_customize_result_metrics').text("noise sum: "+response.metrics);
+            $('#e1_d2_customize_result_scores').text("Original: "+response.metrics[0][0]+"; Customized: "+response.metrics[0][1]);
+            draw_e1_d2_customize_metrics(response.metrics);
             $('#e1_d2_customize_result').show('fast');
             $('#run_e1_d2_customize').val("Run");
+            for(var key in e1_d2_customize_options){
+                if(e1_d2_customize_options[key] != "remove"){
+                    delete e1_d2_customize_options[key];
+                }
+            }
         },
         error: function(rs, e) {
             alert("Unexpected error. Please refresh the page and try again or contact me through email in the about page.");
@@ -313,6 +318,9 @@ $(".process_options").change(function() {
     }
     else{
         $("#"+attribute_name).hide("fast").find("div:last").remove();
+        if(attribute_name in e1_d2_customize_options){
+            delete e1_d2_customize_options[attribute_name];
+        }
     }
 })
 
@@ -331,5 +339,63 @@ $("#e1_d2_customize_control").click(function() {
         $("#e1_d2_customize_content").hide("slow");
         $("#e1_d2_customize_control").val("Show");
     }
-
 })
+
+Chart.defaults.global.legend.display = false;
+function draw_e1_d1_metrics(metrics) {
+    draw_chart('e1_d1_result_sex_statistical_parity_difference', [metrics[1][0][0], metrics[1][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d1_result_sex_equal_opportunity_difference', [metrics[1][1][0], metrics[1][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d1_result_sex_average_odds_difference', [metrics[1][2][0], metrics[1][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d1_result_sex_disparate_impact', [metrics[1][3][0], metrics[1][3][1]], "Disparate impact", 0, 1);
+    draw_chart('e1_d1_result_age_statistical_parity_difference', [metrics[2][0][0], metrics[2][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d1_result_age_equal_opportunity_difference', [metrics[2][1][0], metrics[2][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d1_result_age_average_odds_difference', [metrics[2][2][0], metrics[2][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d1_result_age_disparate_impact', [metrics[2][3][0], metrics[2][3][1]], "Disparate impact", 0, 1);
+}
+
+function draw_e1_d2_metrics(metrics) {
+    draw_chart('e1_d2_result_sex_statistical_parity_difference', [metrics[1][0][0], metrics[1][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d2_result_sex_equal_opportunity_difference', [metrics[1][1][0], metrics[1][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d2_result_sex_average_odds_difference', [metrics[1][2][0], metrics[1][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d2_result_sex_disparate_impact', [metrics[1][3][0], metrics[1][3][1]], "Disparate impact", 0, 1);
+    draw_chart('e1_d2_result_race_statistical_parity_difference', [metrics[2][0][0], metrics[2][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d2_result_race_equal_opportunity_difference', [metrics[2][1][0], metrics[2][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d2_result_race_average_odds_difference', [metrics[2][2][0], metrics[2][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d2_result_race_disparate_impact', [metrics[2][3][0], metrics[2][3][1]], "Disparate impact", 0, 1);
+}
+
+function draw_e1_d2_customize_metrics(metrics) {
+    draw_chart('e1_d2_customize_result_sex_statistical_parity_difference', [metrics[1][0][0], metrics[1][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d2_customize_result_sex_equal_opportunity_difference', [metrics[1][1][0], metrics[1][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d2_customize_result_sex_average_odds_difference', [metrics[1][2][0], metrics[1][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d2_customize_result_sex_disparate_impact', [metrics[1][3][0], metrics[1][3][1]], "Disparate impact", 0, 1);
+    draw_chart('e1_d2_customize_result_age_statistical_parity_difference', [metrics[2][0][0], metrics[2][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d2_customize_result_age_equal_opportunity_difference', [metrics[2][1][0], metrics[2][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d2_customize_result_age_average_odds_difference', [metrics[2][2][0], metrics[2][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d2_customize_result_age_disparate_impact', [metrics[2][3][0], metrics[2][3][1]], "Disparate impact", 0, 1);
+}
+
+function draw_chart(element_id, data_list, title, suggestedMin, suggestedMax){
+    backgroundColorOriginal = 'rgba(255, 99, 132, 0.2)';
+    backgroundColorCustomized = 'rgba(54, 162, 235, 0.2)';
+    borderColorOriginal = 'rgba(255, 99, 132, 1)';
+    borderColorCustomized = 'rgba(54, 162, 235, 1)';
+    var element = $('#'+element_id);
+    var chart = new Chart(element, {
+        type: 'bar',
+        data: {
+            labels: ['Original', 'Processed'],
+            datasets: [{
+                data: data_list,
+                backgroundColor: [backgroundColorOriginal, backgroundColorCustomized],
+                borderColor: [backgroundColorOriginal, backgroundColorCustomized],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            title: {display: true, text: title},
+            scales: {yAxes: [{ticks: {suggestedMin: suggestedMin, suggestedMax: suggestedMax}}]},
+        }
+    });
+}

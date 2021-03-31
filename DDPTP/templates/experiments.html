@@ -3,6 +3,7 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static '/css/experiment.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
 <div class="container">
     <div class="title">
@@ -16,14 +17,42 @@
                 <b>{{ texts.e1_dataset1 }}</b> 
                 <input class="d-inline" type="button" id="run_e1_d1" name="run_e1_d1" value="Run" />
             </div>
-            <div id="e1_d1_result" class="result" style="display: none;">
-                <span>{{ texts.e1_d1_description1 }}</span> 
-                <br>
-                score: <span id="e1_d1_original_score"></span>
-                <br>
-                <span>{{ texts.e1_d1_description2 }}</span> 
-                <br>
-                score: <span id="e1_d1_processed_score"></span>
+            <div id="e1_d1_result" style="display: none;">
+                <h5>Result</h5>
+                <div id="e1_d1_result_metrics">
+                    <b>Scores:</b>
+                    <p id="e1_d1_result_scores"></p>
+                    <b>Metrics of sex:</b>
+                    <div id="e1_d1_result_sex" class="row">
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_sex_statistical_parity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_sex_equal_opportunity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_sex_average_odds_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_sex_disparate_impact"></canvas>
+                        </div>
+                    </div>
+                    <b>Metrics of age:</b>
+                    <div id="e1_d1_result_age" class="row">
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_age_statistical_parity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_age_equal_opportunity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_age_average_odds_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d1_result_age_disparate_impact"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="e1_d2_customize" class="customize">
                 <h4>Customize</h4>
@@ -86,7 +115,40 @@
                         <input class="d-inline" type="button" id="run_e1_d2_customize" name="run_e1_d2_customize" value="Confirm" />
                         <div id="e1_d2_customize_result" style="display: none;">
                             <h5>Result</h5>
-                            <span id="e1_d2_customize_result_metrics"></span>
+                            <div id="e1_d2_customize_result_metrics">
+                                <b>Scores:</b>
+                                <p id="e1_d2_customize_result_scores"></p>
+                                <b>Metrics of sex:</b>
+                                <div id="e1_d2_customize_result_sex" class="row">
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_sex_statistical_parity_difference"></canvas>
+                                    </div>
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_sex_equal_opportunity_difference"></canvas>
+                                    </div>
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_sex_average_odds_difference"></canvas>
+                                    </div>
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_sex_disparate_impact"></canvas>
+                                    </div>
+                                </div>
+                                <b>Metrics of age:</b>
+                                <div id="e1_d2_customize_result_age" class="row">
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_age_statistical_parity_difference"></canvas>
+                                    </div>
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_age_equal_opportunity_difference"></canvas>
+                                    </div>
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_age_average_odds_difference"></canvas>
+                                    </div>
+                                    <div class="col-3 chart">
+                                        <canvas id="e1_d2_customize_result_age_disparate_impact"></canvas>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -98,18 +160,42 @@
                 <b>{{ texts.e1_dataset2 }}</b> 
                 <input class="d-inline" type="button" id="run_e1_d2" name="run_e1_d2" value="Run" />
             </div>
-            <div id="e1_d2_result" class="result" style="display: none;">
-                <span>{{ texts.e1_d2_description1 }}</span>
-                <br>
-                score: <span id="e1_d2_original_score"></span>
-                <br>
-                <span>{{ texts.e1_d2_description2 }}</span> 
-                <br>
-                score: <span id="e1_d2_processed_score"></span>
-                <br>
-                <span>{{ texts.e1_dataset2_abstraction_description }}</span>
-                <br>
-                score: <span id="e1_d2_abstracted_score"></span>
+            <div id="e1_d2_result" style="display: none;">
+                <h5>Result</h5>
+                <div id="e1_d2_result_metrics">
+                    <b>Scores:</b>
+                    <p id="e1_d2_result_scores"></p>
+                    <b>Metrics of sex:</b>
+                    <div id="e1_d2_result_sex" class="row">
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_sex_statistical_parity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_sex_equal_opportunity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_sex_average_odds_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_sex_disparate_impact"></canvas>
+                        </div>
+                    </div>
+                    <b>Metrics of race:</b>
+                    <div id="e1_d2_result_age" class="row">
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_race_statistical_parity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_race_equal_opportunity_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_race_average_odds_difference"></canvas>
+                        </div>
+                        <div class="col-3 chart">
+                            <canvas id="e1_d2_result_race_disparate_impact"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
