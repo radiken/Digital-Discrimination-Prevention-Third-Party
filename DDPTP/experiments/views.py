@@ -88,7 +88,7 @@ def get_statlog_models_sensitive_rates_from_experiments():
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
         if request.POST.get("action")=="run_e1_d1":
-            metrics = customize_statlog_predition("GaussianNB", {"age": "remove", "personal_status_and_sex": "remove", 'duration': 'remove', 'account_status': {'g2': ['A11', 'A14'], 'g1': ['A12', 'A13']}})
+            metrics = customize_statlog_predition("decision_tree", {"age": "remove", "personal_status_and_sex": "remove"})
             ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e1_d2":
             metrics = adult_prediction()

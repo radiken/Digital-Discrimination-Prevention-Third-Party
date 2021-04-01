@@ -12,6 +12,7 @@ from .models import Adult_original
 from .models import Adult_test
 from .models import Statlog
 
+# To increase efficiency, prepare some data while initializing
 statlog_data = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
         "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker")
 statlog_result = Statlog.objects.values_list("result")
@@ -19,6 +20,11 @@ adult_train_x = Adult_original.objects.values_list("age", "workclass", "fnlwgt",
 adult_train_y = Adult_original.objects.values_list("income")
 adult_test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
 adult_test_y = Adult_test.objects.values_list("income")
+adult_train_x = pd.DataFrame(list(adult_train_x))
+adult_test_x = pd.DataFrame(list(adult_test_x))
+imp = SimpleImputer(missing_values="?", strategy="most_frequent")
+adult_train_x = pd.DataFrame(imp.fit_transform(adult_train_x))
+adult_test_x = pd.DataFrame(imp.fit_transform(adult_test_x))
 
 '''
 Experiment 1
@@ -91,13 +97,8 @@ def customize_statlog_predition(classifier, actions):
 
 def adult_prediction():
     # preprocess data
-    train_x = pd.DataFrame(list(adult_train_x))
-    test_x = pd.DataFrame(list(adult_test_x))
-
-    # handle missing values
-    imp = SimpleImputer(missing_values="?", strategy="most_frequent")
-    train_x = pd.DataFrame(imp.fit_transform(train_x))
-    test_x = pd.DataFrame(imp.fit_transform(test_x))
+    train_x = adult_train_x
+    test_x = adult_test_x
 
     train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
     test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
@@ -284,7 +285,75 @@ def epsilon_and_noise_level_chart_figures():
 Experiment 3
 Test whether the app can verify the fairness of the algorithms
 Based on the distribution of the sensitive information in the classification
+
+
+experiment 3 redesign:
+1. test discrimination level when only remove sensitive attributes
+2. if not good, compute the correlations, find the most related attributes
+3. remove the relevant attributes and try again
 '''
+
+def get_statlog_models_sensitive_rates(x, y):
+    x = pd.DataFrame(x)
+    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
+        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
+
+    original_train_x, original_test_x, train_y, test_y = train_test_split(x, list(y), test_size=0.33, random_state=0)
+
+    # remove sensitive information in the processed training set
+    processed_train_x = original_train_x.drop(columns=["personal_status_and_sex", "age"])
+    processed_test_x = original_test_x.drop(columns=["personal_status_and_sex", "age"])
+
+    # one hot encode
+    one_hot_original_train_x = pd.get_dummies(original_train_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    one_hot_original_test_x = pd.get_dummies(original_test_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    one_hot_processed_train_x = pd.get_dummies(processed_train_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+    one_hot_processed_test_x = pd.get_dummies(processed_test_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
+        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
+
+    original_clf = tree.DecisionTreeClassifier()
+    original_clf.fit(one_hot_original_train_x, train_y)
+    original_result = original_clf.predict(one_hot_original_test_x)
+    original_result = [i-1 for i in original_result]
+    original_zero_rates, original_one_rates = get_model_prediction_attribute_distribution(original_test_x, original_result, "personal_status_and_sex")
+
+    processed_clf = tree.DecisionTreeClassifier()
+    processed_clf.fit(one_hot_processed_train_x, train_y)
+    processed_result = processed_clf.predict(one_hot_processed_test_x)
+    processed_result = [i-1 for i in processed_result]
+    processed_zero_rates, processed_one_rates = get_model_prediction_attribute_distribution(original_test_x, processed_result, "personal_status_and_sex")
+
+    return original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates
+
+def get_adult_correlations():
+    # preprocess data
+    test_x = adult_test_x
+    test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
+
+    # one hot encode
+    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
+
+    one_hot_columns = list(original_test_x.columns.values)
+    original_test_x = original_test_x.astype(int)
+    test_x_values = original_test_x.values
+    correlations = np.corrcoef(test_x_values.T)
+    male_correlations = correlations[one_hot_columns.index("sex_Male")]
+    white_correlations = correlations[one_hot_columns.index("race_White")]
+    black_correlations = correlations[one_hot_columns.index("race_Black")]
+    asian_correlations = correlations[one_hot_columns.index("race_Asian-Pac-Islander")]
+    amer_correlations = correlations[one_hot_columns.index("race_Amer-Indian-Eskimo")]
+    other_correlations = correlations[one_hot_columns.index("race_Other")]
+    correlations_with_sensitive = pd.DataFrame(np.array([white_correlations, black_correlations, asian_correlations, amer_correlations, other_correlations, male_correlations]), columns=one_hot_columns)
+    correlations_with_sensitive.drop(columns=['sex_Male', 'sex_Female', 'race_White', 'race_Black', 'race_Asian-Pac-Islander', 'race_Amer-Indian-Eskimo', 'race_Other'], inplace=True)
+    correlations_with_sensitive = correlations_with_sensitive.append(correlations_with_sensitive.iloc[:-1].abs().mean(numeric_only=True), ignore_index=True)
+    correlations_with_sensitive = correlations_with_sensitive.iloc[-2:]
+    sorted_correlations = correlations_with_sensitive.sum().sort_values(ascending=False)
+    print(sorted_correlations)
+    return sorted_correlations
+
 def get_adult_models_sensitive_rates(test_x):
     # preprocess data
     test_x = pd.DataFrame(list(test_x))
@@ -355,41 +424,6 @@ def get_model_prediction_attribute_distribution(test_x, prediction, attribute):
     one_rates = one_df[attribute].value_counts(normalize=True)
     one_rates = one_rates.round(2)
     return zero_rates, one_rates
-
-def get_statlog_models_sensitive_rates(x, y):
-    x = pd.DataFrame(x)
-    x.columns = ["account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
-        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker"]
-
-    original_train_x, original_test_x, train_y, test_y = train_test_split(x, list(y), test_size=0.33, random_state=0)
-
-    # remove sensitive information in the processed training set
-    processed_train_x = original_train_x.drop(columns=["personal_status_and_sex", "age"])
-    processed_test_x = original_test_x.drop(columns=["personal_status_and_sex", "age"])
-
-    # one hot encode
-    one_hot_original_train_x = pd.get_dummies(original_train_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
-        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
-    one_hot_original_test_x = pd.get_dummies(original_test_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", "personal_status_and_sex", 
-        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
-    one_hot_processed_train_x = pd.get_dummies(processed_train_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
-        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
-    one_hot_processed_test_x = pd.get_dummies(processed_test_x, columns=["account_status", "credit_history", "purpose", "savings_account", "present_employment_since", 
-        "guarantors", "property", "other_installment_plans", "housing", "job", "telephone", "foreign_worker"])
-
-    original_clf = tree.DecisionTreeClassifier()
-    original_clf.fit(one_hot_original_train_x, train_y)
-    original_result = original_clf.predict(one_hot_original_test_x)
-    original_result = [i-1 for i in original_result]
-    original_zero_rates, original_one_rates = get_model_prediction_attribute_distribution(original_test_x, original_result, "personal_status_and_sex")
-
-    processed_clf = tree.DecisionTreeClassifier()
-    processed_clf.fit(one_hot_processed_train_x, train_y)
-    processed_result = processed_clf.predict(one_hot_processed_test_x)
-    processed_result = [i-1 for i in processed_result]
-    processed_zero_rates, processed_one_rates = get_model_prediction_attribute_distribution(original_test_x, processed_result, "personal_status_and_sex")
-
-    return original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates
 
 # ---------------- functions to create models ---------------------
 
