@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="title">
+        <h1>Algorithm Status</h1>
+        <h5>The algorithm is doing well. No discrimination is discovered.</h5>
+    </div>
+    <div id="metrics">
+        <b>Metrics of sex:</b>
+        <div id="result_sex" class="row">
+            <div class="col-3 chart">
+                <canvas id="sex_statistical_parity_difference"></canvas>
+            </div>
+            <div class="col-3 chart">
+                <canvas id="sex_equal_opportunity_difference"></canvas>
+            </div>
+            <div class="col-3 chart">
+                <canvas id="sex_average_odds_difference"></canvas>
+            </div>
+            <div class="col-3 chart">
+                <canvas id="sex_disparate_impact"></canvas>
+            </div>
+        </div>
+        <br>
+        <b>Metrics of age:</b>
+        <div id="e1_d2_improved_result_age" class="row">
+            <div class="col-3 chart">
+                <canvas id="age_statistical_parity_difference"></canvas>
+            </div>
+            <div class="col-3 chart">
+                <canvas id="age_equal_opportunity_difference"></canvas>
+            </div>
+            <div class="col-3 chart">
+                <canvas id="age_average_odds_difference"></canvas>
+            </div>
+            <div class="col-3 chart">
+                <canvas id="age_disparate_impact"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="{% static '/css/experiment.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+function draw_metrics(metrics) {
+    draw_chart('sex_statistical_parity_difference', [metrics[0][0]], "Statistical parity difference", -1, 1);
+    draw_chart('sex_equal_opportunity_difference', [metrics[0][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('sex_average_odds_difference', [metrics[0][2]], "Average odds difference", -1, 1);
+    draw_chart('sex_disparate_impact', [metrics[0][3]], "Disparate impact", 0, 1);
+    draw_chart('age_statistical_parity_difference', [metrics[1][0]], "Statistical parity difference", -1, 1);
+    draw_chart('age_equal_opportunity_difference', [metrics[1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('age_average_odds_difference', [metrics[1][2]], "Average odds difference", -1, 1);
+    draw_chart('age_disparate_impact', [metrics[1][3]], "Disparate impact", 0, 1);
+}
+
+function draw_chart(element_id, data_list, title, suggestedMin, suggestedMax){
+    backgroundColor = 'rgba(60, 179, 113, 0.2)';
+    borderColor = 'rgba(60, 179, 113, 1)';
+    var element = $('#'+element_id);
+    var chart = new Chart(element, {
+        type: 'bar',
+        data: {
+            labels: [title],
+            datasets: [{
+                data: data_list,
+                backgroundColor: [backgroundColor],
+                borderColor: [borderColor],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            title: {display: true, text: title},
+            scales: {yAxes: [{ticks: {suggestedMin: suggestedMin, suggestedMax: suggestedMax}}]},
+        }
+    });
+}
+Chart.defaults.global.legend.display = false;
+// Data comes from experiment 1 data set 1
+var metrics = [[-0.02, 0.05, -0.05, 0.98], [0.03, 0.02, 0, 1.04]];
+draw_metrics(metrics);
+</script>
+{% endblock %}

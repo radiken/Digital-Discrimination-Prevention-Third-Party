@@ -9,7 +9,7 @@
     </div>
     <h2 style="margin-bottom: 30px;">The DDP App Demo Pages</h2>
     <div class="row text-center">
-        <div class="col-4">
+        <div class="col-3">
             <div class="card">
                 <div class="card-body" style="margin:10px;">
                     <a href="contract" class="card-link"><h5 class="card-title">Create forms</h5></a>
@@ -18,22 +18,31 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
             <div class="card">
                 <div class="card-body" style="margin:10px;">
                     <a href="submission" class="card-link"><h5 class="card-title">Submit data</h5></a>
                     <h6 class="card-subtitle mb-2 text-muted">For individuals</h6>
-                    <p class="card-text">Individuals submit their information here. This demo page uses the form for the Statlog (German Credit Data) Data Set.</p>
+                    <p class="card-text">Individuals submit their information here.</p>
                     
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
             <div class="card">
                 <div class="card-body" style="margin:10px;">
                         <a href="api" class="card-link"><h5 class="card-title">Make queries</h5></a>
                     <h6 class="card-subtitle mb-2 text-muted">For organizations</h6>
-                    <p class="card-text">Once more than 10 people submitted their data, organizations can make queries on the data set through this API, This demo page use the Statlog (German Credit Data) Data Set as the example.</p>
+                    <p class="card-text">Once more than 10 people submitted their data, organizations can make queries on the data set through this API.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body" style="margin:10px;">
+                        <a href="verification" class="card-link"><h5 class="card-title">Verify fairness</h5></a>
+                    <h6 class="card-subtitle mb-2 text-muted">For all parties</h6>
+                    <p class="card-text">According to the decisions made by the algorithm, the app can see whether it is discriminating against disadvantaged groups.</p>
                 </div>
             </div>
         </div>
@@ -59,9 +68,9 @@
                 </div>
                 <div class="card step" id="step5" style="display: none;">
                     <div class="card-body">
-                    <h4>5. run algorithms</h4>
+                    <h4>5. Run algorithms</h4>
                         <p>
-                            The organization can run the algorithm with the received non-sensitive data.
+                            The organization can run the algorithm with the received non-sensitive data. The classification result will be sent back to the DDP app.
                         </p>
                         <p id="brief">
                             account status: {{submission_data.account_status}}, duration: {{submission_data.duration}} ...
@@ -79,12 +88,12 @@
                         </p>
                         <input type="button" id="predict" value="run algorithm" name="predict"/>
                         <p id="result" style="display:none;"></p>
-                        <input type="button" id="5next" value="next"/>
+                        <input type="button" id="5next" value="next" style="display: none;"/>
                     </div>
                 </div>
-                <div class="card step" id="step6" style="display: none;">
+                <div class="card step" id="step7" style="display: none;">
                     <div class="card-body">
-                        <h4>6. Make queries</h4>
+                        <h4>7. Make queries</h4>
                         <p>
                             Lastly, the organization can <a href="api">make queries</a> once there are more than 10 people submitted their data. 
                         </p>
@@ -113,10 +122,19 @@
                 
                 <div class="card step" id="step4" style="display: none;">
                     <div class="card-body">
-                        <h4>4. save and preserve sensitive data</h4>
+                        <h4>4. Save and preserve sensitive data</h4>
                         <p>Once the app receive a form, the data will be saved, non-sensitive data will be sent to the organization automatically</p>
                         <p>Sensitive information will be kept secret: marital status: {{ submission_data.personal_status_and_sex }}, age: {{ submission_data.age }}</p>
                         <input type="button" id="4next" value="next"/>
+                    </div>
+                </div>
+                <div class="card step" id="step6" style="display: none;">
+                    <div class="card-body">
+                        <h4>6. Verify fairness</h4>
+                        <p>
+                            Based on the classification results returned from the organizations, the DDP app calculates some metrics to see whether the algorithm is fair.
+                        </p>
+                        <input type="button" id="6next" value="next"/>
                     </div>
                 </div>
             </div>
@@ -131,7 +149,7 @@
                 <div class="card step" id="step3" style="display: none;">
                 {% endif %}
                     <div class="card-body">
-                        <h4>3. submission</h4>
+                        <h4>3. Submission</h4>
                         <p>
                             Once the form is released, individuals can submit a data with the form.
                         </p>

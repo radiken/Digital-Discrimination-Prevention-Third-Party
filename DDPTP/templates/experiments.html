@@ -197,6 +197,57 @@
                     </div>
                 </div>
             </div>
+            <div id="e1_d2_improvement" style="display: none;">
+                <b>Improvement</b>
+                <input class="d-inline" type="button" id="run_e1_d2_improvement" name="run_e1_d2_improvement" value="Run" />
+                <p>{{ texts.e1_d2_improvement_description }}</p>
+                <div id="e1_d2_improvement_result" style="display: none;">
+                    <div id="e1_d2_improvement_result_chart">
+                        <canvas id="e1_d2_improvement_result_canvas"></canvas>
+                    </div>
+                </div>
+                <div id="e1_d2_improved" style="display: none;">
+                    <p>{{ texts.e1_d2_improvement_description2 }}</p>
+                    <input class="d-inline" type="button" id="run_e1_d2_improved" name="run_e1_d2_improved" value="Run" />
+                    <div id="e1_d2_improved_result" style="display: none;">
+                        <h5>Result</h5>
+                        <div id="e1_d2_improved_result_metrics">
+                            <b>Scores:</b>
+                            <p id="e1_d2_improved_result_scores"></p>
+                            <b>Metrics of sex:</b>
+                            <div id="e1_d2_improved_result_sex" class="row">
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_sex_statistical_parity_difference"></canvas>
+                                </div>
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_sex_equal_opportunity_difference"></canvas>
+                                </div>
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_sex_average_odds_difference"></canvas>
+                                </div>
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_sex_disparate_impact"></canvas>
+                                </div>
+                            </div>
+                            <b>Metrics of age:</b>
+                            <div id="e1_d2_improved_result_age" class="row">
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_age_statistical_parity_difference"></canvas>
+                                </div>
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_age_equal_opportunity_difference"></canvas>
+                                </div>
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_age_average_odds_difference"></canvas>
+                                </div>
+                                <div class="col-3 chart">
+                                    <canvas id="e1_d2_improved_result_age_disparate_impact"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <hr/>
@@ -351,69 +402,6 @@
                     <input type="button" id="run_e2_t2_customize" name="run_e2_t2_customize" value="Run" />
                     <p id="e2_t2_customize_result" class="result" style="display: none;"></p>
                 </div>
-            </div>
-        </div>
-    </div>
-    <hr/>
-    <div id="e3">
-        <h2>{{ texts.e3_title }}</h2>
-        <p>{{ texts.e3_description }}</p>
-        <div id="e3_t1" class="sub_experiment">
-            <h3>{{ texts.e3_t1_title }}</h3>
-            <p>{{ texts.e3_t1_description }}</p>
-            <input class="d-inline" type="button" id="run_e3_t1" name="run_e3_t1" value="Run" />
-            <div class="result" style="display:none;">
-                <table id="e3_t1_result" style="width:100%;">
-                    <tr>
-                        <th>model</th>
-                        <th>marital status</th>
-                        <th>sex</th>
-                        <th>race</th>
-                        <th>native country</th>
-                    </tr>
-                    <tr>
-                        <td>model 1</td>
-                        <td id="e3_t1_m1_marital_status"></td>
-                        <td id="e3_t1_m1_sex"></td>
-                        <td id="e3_t1_m1_race"></td>
-                        <td id="e3_t1_m1_native_country"></td>
-                    </tr>
-                    <tr>
-                        <td>model 2</td>
-                        <td id="e3_t1_m2_marital_status"></td>
-                        <td id="e3_t1_m2_sex"></td>
-                        <td id="e3_t1_m2_race"></td>
-                        <td id="e3_t1_m2_native_country"></td>
-                    </tr>
-                    <tr>
-                        <td>model 3</td>
-                        <td id="e3_t1_m3_marital_status"></td>
-                        <td id="e3_t1_m3_sex"></td>
-                        <td id="e3_t1_m3_race"></td>
-                        <td id="e3_t1_m3_native_country"></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <div id="e3_t2" class="sub_experiment">
-            <h3>{{ texts.e3_t2_title }}</h3>
-            <p>{{ texts.e3_t2_description }}</p>
-            <input class="d-inline" type="button" id="run_e3_t2" name="run_e3_t2" value="Run" />
-            <div class="result" style="display: none;">
-                <table  id="e3_t2_result" style="width:100%;">
-                    <tr>
-                        <th>model</th>
-                        <th>marital status and sex</th>
-                    </tr>
-                    <tr>
-                        <td>model 1</td>
-                        <td id="e3_t2_m1_marital_status_and_sex"></td>
-                    </tr>
-                    <tr>
-                        <td>model 2</td>
-                        <td id="e3_t2_m2_marital_status_and_sex"></td>
-                    </tr>
-                </table>
             </div>
         </div>
     </div>

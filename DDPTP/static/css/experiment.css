@@ -64,6 +64,11 @@ div.hidden {
     margin-bottom:10px;
 }
 
+#e1_d2_improvement_result_chart{
+    height: 400px;
+    width: 1050px;
+}
+
 #e1_d2_customize_content{
     margin-top: 10px;
 }
@@ -86,4 +91,9 @@ div.hidden {
 
 .chart{
     height: 200px;
+}
+
+hr{
+    margin-top: 40px;
+    margin-bottom: 40px;
 }

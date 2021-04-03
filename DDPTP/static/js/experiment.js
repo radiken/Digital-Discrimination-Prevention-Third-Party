@@ -23,7 +23,7 @@ function run_query(event){
         dataType: "json",
         success: event.data.on_success,
         error: function(rs, e) {
-            alert("Unexpected error. Please refresh the page and try again or contact me through email in the about page.");
+            alert("Unexpected error. Please refresh the page and try again or contact me through email.");
             $(this).prop('value', 'Run again');
         }
     }); 
@@ -52,6 +52,49 @@ $('#run_e1_d2').click({action: "run_e1_d2", csrf_token: $('#csrf_token').val(), 
     draw_e1_d2_metrics(response.metrics);
     $('#e1_d2_result').show('fast');
     $('#run_e1_d2').val('Run again');
+    $('#e1_d2_improvement').show('fast');
+}}, run_query);
+
+$('#run_e1_d2_improvement').click({action: "run_e1_d2_improvement", csrf_token: $('#csrf_token').val(), on_success: function(response){
+    correlations = JSON.parse(response.correlations);
+    colors = [];
+    len = correlations["index"].length;
+    i = 0;
+    while(i < len){
+        red = 255-i*(255/len);
+        green = i*(255/len);
+        color = 'rgba('+red+', '+green+', 0, 0.5)';
+        colors.push(color);
+        i++;
+    }
+    var element = $('#e1_d2_improvement_result_canvas');
+    var chart = new Chart(element, {
+        type: 'bar',
+        data: {
+            labels: correlations["index"],
+            datasets: [{
+                data: correlations["data"],
+                backgroundColor: colors,
+                borderColor: 'rgba(200, 200, 200, 0.75)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            title: {display: true, text: "Sum of absolute correlations of sex and race"},
+            scales: {yAxes: [{ticks: {suggestedMin: 0, suggestedMax: 1}}]},
+        }
+    });
+    $('#e1_d2_improvement_result').show('fast');
+    $('#run_e1_d2_improvement').val('Run again');
+    $('#e1_d2_improved').show('fast');
+}}, run_query);
+
+$('#run_e1_d2_improved').click({action: "run_e1_d2_improved", csrf_token: $('#csrf_token').val(), on_success: function(response){
+    $('#e1_d2_improved_result_scores').text("Original: "+response.metrics[0][0]+"; Customized: "+response.metrics[0][1]);
+    draw_e1_d2_improved_metrics(response.metrics);
+    $('#e1_d2_improved_result').show('fast');
+    $('#run_e1_d2_improved').val('Run again');
 }}, run_query);
 
 $('#run_e2_t1_q1').click({action: "run_e2_t1_q1", csrf_token: $('#csrf_token').val(), on_success: function(response) {
@@ -126,30 +169,6 @@ $('#run_e2_t2_c2').click({action: "run_e2_t2_c2", csrf_token: $('#csrf_token').v
     $('#run_e2_t2_c2').val('compute again');
 }}, run_query);
 
-$('#run_e3_t1').click({action: "run_e3_t1", csrf_token: $('#csrf_token').val(), on_success: function(response) {
-    $('#e3_t1_m1_marital_status').text("Category 0: \n"+response.original_zero_rates.marital_status+"\n Category 1: \n"+response.original_one_rates.marital_status);
-    $('#e3_t1_m1_sex').text("Category 0: \n"+response.original_zero_rates.sex+"\n Category 1: \n"+response.original_one_rates.sex);
-    $('#e3_t1_m1_race').text("Category 0: \n"+response.original_zero_rates.race+"\n Category 1: \n"+response.original_one_rates.race);
-    $('#e3_t1_m1_native_country').text("Category 0: \n"+response.original_zero_rates.native_country+"\n Category 1: \n"+response.original_one_rates.native_country);
-    $('#e3_t1_m2_marital_status').text("Category 0: \n"+response.processed_zero_rates.marital_status+"\n Category 1: \n"+response.processed_one_rates.marital_status);
-    $('#e3_t1_m2_sex').text("Category 0: \n"+response.processed_zero_rates.sex+"\n Category 1: \n"+response.processed_one_rates.sex);
-    $('#e3_t1_m2_race').text("Category 0: \n"+response.processed_zero_rates.race+"\n Category 1: \n"+response.processed_one_rates.race);
-    $('#e3_t1_m2_native_country').text("Category 0: \n"+response.processed_zero_rates.native_country+"\n Category 1: \n"+response.processed_one_rates.native_country);
-    $('#e3_t1_m3_marital_status').text("Category 0: \n"+response.abstracted_zero_rates.marital_status+"\n Category 1: \n"+response.abstracted_one_rates.marital_status);
-    $('#e3_t1_m3_sex').text("Category 0: \n"+response.abstracted_zero_rates.sex+"\n Category 1: \n"+response.abstracted_one_rates.sex);
-    $('#e3_t1_m3_race').text("Category 0: \n"+response.abstracted_zero_rates.race+"\n Category 1: \n"+response.abstracted_one_rates.race);
-    $('#e3_t1_m3_native_country').text("Category 0: \n"+response.abstracted_zero_rates.native_country+"\n Category 1: \n"+response.abstracted_one_rates.native_country);
-    $('#e3_t1_result').parent().show('fast');
-    $('#run_e3_t1').val('Run again');
-}}, run_query);
-
-$('#run_e3_t2').click({action: "run_e3_t2", csrf_token: $('#csrf_token').val(), on_success: function(response) {
-    $('#e3_t2_m1_marital_status_and_sex').text("Category 0: \n"+response.original_zero_rates+"\n Category 1: \n"+response.original_one_rates);
-    $('#e3_t2_m2_marital_status_and_sex').text("Category 0: \n"+response.processed_zero_rates+"\n Category 1: \n"+response.processed_one_rates);
-    $('#e3_t2_result').parent().show('fast');
-    $('#run_e3_t2').val('Run again');
-}}, run_query);
-
 $('#run_e2_t1_c1').click(function(){
     result = e2_t1_q2_original_result*new_count - e2_t1_q1_original_result*(new_count-1);
     $('#e2_t1_c1_result').text(e2_t1_q2_original_result+"*"+new_count+"-"+e2_t1_q1_original_result+"*("+new_count+"-1) = "+result).show('fast');
@@ -170,7 +189,7 @@ $('#run_e2_t1_c6').click(function(){
             $('#e2_t1_c6_result').text("correct rate: "+response.correct_rate).show('fast');
         },
         error: function(rs, e) {
-            alert("Unexpected error. Please refresh the page and try again or contact me through email in the about page.");
+            alert("Unexpected error. Please refresh the page and try again or contact me through email.");
         }
     }); 
 })
@@ -185,7 +204,7 @@ $('#run_e2_t1_c7').click(function(){
             $('#e2_t1_c7_result').text("correct rate: "+response.correct_rate).show('fast');
         },
         error: function(rs, e) {
-            alert("Unexpected error. Please refresh the page and try again or contact me through email in the about page.");
+            alert("Unexpected error. Please refresh the page and try again or contact me through email.");
         }
     }); 
 })
@@ -233,7 +252,7 @@ $('#run_e2_t2_customize').click(function(){
                     $('#run_e2_t2_customize').val("Run again");
                 },
                 error: function(rs, e) {
-                    alert("Unexpected error. Please refresh the page and try again or contact me through email in the about page.");
+                    alert("Unexpected error. Please refresh the page and try again or contact me through email.");
                     $('#run_e2_t2_customize').val("Run again");
                 }
             }); 
@@ -294,7 +313,7 @@ $('#run_e1_d2_customize').click(function(){
             }
         },
         error: function(rs, e) {
-            alert("Unexpected error. Please refresh the page and try again or contact me through email in the about page.");
+            alert("Unexpected error. Please refresh the page and try again or contact me through email.");
             $('#run_e1_d2_customize').val("Run");
         }
     }); 
@@ -373,6 +392,17 @@ function draw_e1_d2_customize_metrics(metrics) {
     draw_chart('e1_d2_customize_result_age_equal_opportunity_difference', [metrics[2][1][0], metrics[2][1][1]], "Equal opportunity difference", -1, 1);
     draw_chart('e1_d2_customize_result_age_average_odds_difference', [metrics[2][2][0], metrics[2][2][1]], "Average odds difference", -1, 1);
     draw_chart('e1_d2_customize_result_age_disparate_impact', [metrics[2][3][0], metrics[2][3][1]], "Disparate impact", 0, 1);
+}
+
+function draw_e1_d2_improved_metrics(metrics) {
+    draw_chart('e1_d2_improved_result_sex_statistical_parity_difference', [metrics[1][0][0], metrics[1][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d2_improved_result_sex_equal_opportunity_difference', [metrics[1][1][0], metrics[1][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d2_improved_result_sex_average_odds_difference', [metrics[1][2][0], metrics[1][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d2_improved_result_sex_disparate_impact', [metrics[1][3][0], metrics[1][3][1]], "Disparate impact", 0, 1);
+    draw_chart('e1_d2_improved_result_age_statistical_parity_difference', [metrics[2][0][0], metrics[2][0][1]], "Statistical parity difference", -1, 1);
+    draw_chart('e1_d2_improved_result_age_equal_opportunity_difference', [metrics[2][1][0], metrics[2][1][1]], "Equal opportunity difference", -1, 1);
+    draw_chart('e1_d2_improved_result_age_average_odds_difference', [metrics[2][2][0], metrics[2][2][1]], "Average odds difference", -1, 1);
+    draw_chart('e1_d2_improved_result_age_disparate_impact', [metrics[2][3][0], metrics[2][3][1]], "Disparate impact", 0, 1);
 }
 
 function draw_chart(element_id, data_list, title, suggestedMin, suggestedMax){

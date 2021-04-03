@@ -33,6 +33,7 @@ urlpatterns = [
     path('demo/api', demo_api_view),
     path('demo/api/result', api_result),
     path('demo/index/predict', predict),
+    path('demo/verification', verification_view),
 
     path('about/', about_view)
 ]

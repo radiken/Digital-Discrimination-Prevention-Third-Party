@@ -26,6 +26,9 @@ def demo_contract_view(request, *args, **kwargs):
 def statlog_contract_view(request, *args, **kwargs):
 	return render(request, "statlog_contract.html", {})
 
+def verification_view(request, *args, **kwargs):
+	return render(request, "verification.html", {})
+
 def individual_submission_view(request, *args, **kwargs):
     form = Statlog_submission_form()
     accept_return = False

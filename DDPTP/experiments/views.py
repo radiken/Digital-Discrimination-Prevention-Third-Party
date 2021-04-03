@@ -91,12 +91,24 @@ def run_experiments(request, *args, **kwargs):
             metrics = customize_statlog_predition("decision_tree", {"age": "remove", "personal_status_and_sex": "remove"})
             ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e1_d2":
-            metrics = adult_prediction()
+            # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife) and remove gender, race, native country and marital status
+            age_abstract = {"young_age": "<=35", "middle_age": " in range(36, 56)", "older_age": ">=56"}
+            relationship_abstract = {"Husband-or-wife": ["Husband", "Wife"]}
+            actions = {"marital_status": "remove", "race": "remove", "sex": "remove", "native_country": "remove", "age": age_abstract, "relationship": relationship_abstract}
+            metrics = adult_prediction(actions)
+            ctx = {'metrics': metrics}
+        elif request.POST.get("action")=="run_e1_d2_improvement":
+            correlations = adult_correlations()
+            correlations = correlations.to_json(orient="split")
+            ctx = {'correlations': correlations}
+        elif request.POST.get("action")=="run_e1_d2_improved":
+            occupation_abstract = {"group_1": ["Adm-clerical", "Craft-repair"]}
+            actions = {"marital_status": "remove", "race": "remove", "sex": "remove", "occupation": occupation_abstract, "relationship": "remove"}
+            metrics = adult_prediction(actions)
             ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e1_d2_customize":
             classifier = request.POST.get("classifier")
             actions = json.loads(request.POST.get("actions"))
-            print(actions)
             metrics = customize_statlog_predition(classifier, actions)
             ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e2_t1_q1":
@@ -147,18 +159,17 @@ def run_experiments(request, *args, **kwargs):
 
 def experiments_view(request, *args, **kwargs):
     texts = {
-        'e1_title' : "1. Discrimination Experiment",
+        'e1_title' : "Discrimination Experiments",
         'e1_description' : "This experiment aims to prove that classifiers can have good performance without some sensitive input. We observe the result by controlling the inputs of decision tree classifiers on two real-world data sets.",
         'e1_dataset1' : "Statlog (German Credit Data) Data Set",
         'e1_d1_description1': "Predict the test set with model that use all the information from inputs:",
         'e1_d1_description2': "Take out the information of \"age\", \"marital status and sex\":",
         'e1_dataset2' : "Adult Data Set",
-        'e1_d2_description1': "Predict the test set with model that use all the information as inputs:",
-        'e1_d2_description2': "Take out the information of \"sex\" \"race\", \"native country\" and \"marital status\" from inputs:",
-        'e1_dataset2_abstraction_description': "Apart from removing the sensitive data, abstraction is also an option. In this example, abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife), predict the test set again:",
+        'e1_d2_improvement_description': "Although the result achieved a good trade off between accuracy and fairness, the figures of disparate impact metric are still not ideal. In this situation, the model will calculate the correlations between the sensitive values and other attributes to seek better solutions.",
+        'e1_d2_improvement_description2': "Make changes accordingly and run again:",
         'e1_d2_customize_description': "Remove or abstract any attribute you want. \nAt the moment, you can abstract continuous attribute to 2 groups and discrete attribute to 3 groups.",
         'e1_d2_customize_s3_description': "Note: The decision tree classifier involves randomness, result may be different each time.",
-        'e2_title': "2. Privacy Experiment",
+        'e2_title': "Privacy Experiments",
         'e2_description': "This experiment demostrate the performance of adding noise to the results of numeric queries. Results of this experiment proves it is save to provide an API to the organization end to query information about the sensitive data.",
         'e2_charts_title': "Premise",
         'e2_charts_description': '''Differential privacy is a tradeoff between privacy level(noise level) and data availability. The larger the noise is, the less accurate and meaningful the data is. 

@@ -11,6 +11,7 @@ $('#predict').on('click', function () {
         success: function(response){
             $('#result').text("result: "+response.result);
             $('#result').show();
+            $('#5next').show();
         },
         error: function(rs, e) {
             alert(e);
@@ -40,6 +41,11 @@ $('#4next').on('click', function () {
 
 $('#5next').on('click', function () {
     $('#step6').show();
+    $(this).hide();
+});
+
+$('#6next').on('click', function () {
+    $('#step7').show();
     $(this).hide();
 });
 

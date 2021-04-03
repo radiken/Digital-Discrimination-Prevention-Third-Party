@@ -25,6 +25,8 @@ adult_test_x = pd.DataFrame(list(adult_test_x))
 imp = SimpleImputer(missing_values="?", strategy="most_frequent")
 adult_train_x = pd.DataFrame(imp.fit_transform(adult_train_x))
 adult_test_x = pd.DataFrame(imp.fit_transform(adult_test_x))
+adult_train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
+adult_test_x.columns = ["age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country"]
 
 '''
 Experiment 1
@@ -95,17 +97,11 @@ def customize_statlog_predition(classifier, actions):
     metrics = [scores, sex_metrics, age_metrics]
     return metrics
 
-def adult_prediction():
-    # preprocess data
-    train_x = adult_train_x
-    test_x = adult_test_x
 
-    train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
-    test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
-    # abstract age(young age:<=35, middle age: 36-55, older age: >=56) and relationship(husband: husband-or-wife, wife: husband-or-wife) and remove gender, race, native country and marital status
-    age_abstract = {"young_age": "<=35", "middle_age": " in range(36, 56)", "older_age": ">=56"}
-    relationship_abstract = {"Husband-or-wife": ["Husband", "Wife"]}
-    actions = {"marital_status": "remove", "race": "remove", "sex": "remove", "native_country": "remove", "age": age_abstract, "relationship": relationship_abstract}
+def adult_prediction(actions):
+    # preprocess data
+    train_x = adult_train_x.copy()
+    test_x = adult_test_x.copy()
     processed_train_x = preprocess_data(train_x, actions)
     processed_test_x = preprocess_data(test_x, actions)
 
@@ -113,9 +109,16 @@ def adult_prediction():
     le = preprocessing.LabelEncoder()
     train_y = le.fit_transform(adult_train_y)
     test_y = le.fit_transform(adult_test_y)
-    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
-    processed_train_x = pd.get_dummies(processed_train_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
-    processed_test_x = pd.get_dummies(processed_test_x, columns=['age', 'workclass', 'education', 'occupation', 'relationship'])
+    to_encode = ['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country']
+    original_test_x = pd.get_dummies(test_x, columns=to_encode)
+    continuous_attributes = ["age", "fnlwgt", "education-num", "capital-gain", "capital-loss", "hours-per-week"]
+    for key in actions.keys():
+        if key in continuous_attributes:
+            to_encode.append(key)
+        if actions[key]=="remove":
+            to_encode.remove(key)
+    processed_train_x = pd.get_dummies(processed_train_x, columns=to_encode)
+    processed_test_x = pd.get_dummies(processed_test_x, columns=to_encode)
 
     # match columns(features)
     original_columns = pickle.load(open('ml_models/adult_original_columns', 'rb'))
@@ -123,13 +126,20 @@ def adult_prediction():
     for column in original_missing_columns:
         original_test_x[column] = 0
     original_test_x = original_test_x[original_columns]
-
     original_result = load_model_and_predict('original_decision_tree', original_test_x)
     original_score = load_model_and_score(original_test_x, test_y, 'original_decision_tree')
-    clf = GaussianNB()
+
+    clf = tree.DecisionTreeClassifier()
     clf.fit(processed_train_x, train_y)
+    # match columns(features)
+    processed_columns = processed_train_x.columns
+    processed_missing_columns = set(processed_columns) - set(processed_test_x.columns)
+    for column in original_missing_columns:
+        processed_test_x[column] = 0
+    processed_test_x = processed_test_x[processed_columns]
     processed_result = clf.predict(processed_test_x)
     processed_score = clf.score(processed_test_x, test_y)
+    print(processed_score)
 
     sex_original_metrics = get_result_metrics(test_x, original_result, test_y, "sex", ["Male"], ["Female"], 1, 0)
     sex_processed_metrics = get_result_metrics(test_x, processed_result, test_y, "sex", ["Male"], ["Female"], 1, 0)
@@ -141,6 +151,31 @@ def adult_prediction():
     scores = [round(x,2) for x in scores]
     metrics = [scores, sex_metrics, race_metrics]
     return metrics
+
+def adult_correlations():
+    # preprocess data
+    test_x = adult_test_x
+    test_x.columns = ["age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country"]
+
+    # one hot encode
+    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
+
+    one_hot_columns = list(original_test_x.columns.values)
+    original_test_x = original_test_x.astype(int)
+    test_x_values = original_test_x.values
+    correlations = np.corrcoef(test_x_values.T)
+    male_correlations = correlations[one_hot_columns.index("sex_Male")]
+    white_correlations = correlations[one_hot_columns.index("race_White")]
+    black_correlations = correlations[one_hot_columns.index("race_Black")]
+    asian_correlations = correlations[one_hot_columns.index("race_Asian-Pac-Islander")]
+    amer_correlations = correlations[one_hot_columns.index("race_Amer-Indian-Eskimo")]
+    other_correlations = correlations[one_hot_columns.index("race_Other")]
+    correlations_with_sensitive = pd.DataFrame(np.array([white_correlations, black_correlations, asian_correlations, amer_correlations, other_correlations, male_correlations]), columns=one_hot_columns)
+    correlations_with_sensitive.drop(columns=['sex_Male', 'sex_Female', 'race_White', 'race_Black', 'race_Asian-Pac-Islander', 'race_Amer-Indian-Eskimo', 'race_Other'], inplace=True)
+    correlations_with_sensitive = correlations_with_sensitive.append(correlations_with_sensitive.iloc[:-1].abs().mean(numeric_only=True), ignore_index=True)
+    correlations_with_sensitive = correlations_with_sensitive.iloc[-2:]
+    sorted_correlations = correlations_with_sensitive.abs().sum().sort_values(ascending=False)
+    return sorted_correlations
 
 # get the metrics that evaluate the discrimination level
 # privileged_group and unprivileged_group are lists(discrete value) or strings(continuous values)
@@ -328,31 +363,7 @@ def get_statlog_models_sensitive_rates(x, y):
 
     return original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates
 
-def get_adult_correlations():
-    # preprocess data
-    test_x = adult_test_x
-    test_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
 
-    # one hot encode
-    original_test_x = pd.get_dummies(test_x, columns=['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country'])
-
-    one_hot_columns = list(original_test_x.columns.values)
-    original_test_x = original_test_x.astype(int)
-    test_x_values = original_test_x.values
-    correlations = np.corrcoef(test_x_values.T)
-    male_correlations = correlations[one_hot_columns.index("sex_Male")]
-    white_correlations = correlations[one_hot_columns.index("race_White")]
-    black_correlations = correlations[one_hot_columns.index("race_Black")]
-    asian_correlations = correlations[one_hot_columns.index("race_Asian-Pac-Islander")]
-    amer_correlations = correlations[one_hot_columns.index("race_Amer-Indian-Eskimo")]
-    other_correlations = correlations[one_hot_columns.index("race_Other")]
-    correlations_with_sensitive = pd.DataFrame(np.array([white_correlations, black_correlations, asian_correlations, amer_correlations, other_correlations, male_correlations]), columns=one_hot_columns)
-    correlations_with_sensitive.drop(columns=['sex_Male', 'sex_Female', 'race_White', 'race_Black', 'race_Asian-Pac-Islander', 'race_Amer-Indian-Eskimo', 'race_Other'], inplace=True)
-    correlations_with_sensitive = correlations_with_sensitive.append(correlations_with_sensitive.iloc[:-1].abs().mean(numeric_only=True), ignore_index=True)
-    correlations_with_sensitive = correlations_with_sensitive.iloc[-2:]
-    sorted_correlations = correlations_with_sensitive.sum().sort_values(ascending=False)
-    print(sorted_correlations)
-    return sorted_correlations
 
 def get_adult_models_sensitive_rates(test_x):
     # preprocess data
