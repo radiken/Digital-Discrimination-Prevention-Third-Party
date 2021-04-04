@@ -15,10 +15,12 @@
         <p>{{ texts.e1_description }}</p>
         <h3>Introduction</h3>
         <p>{{ texts.e1_introduction_description }}</p>
-        <p class="text-muted">{{ texts.e1_introduction_m1_description }}</p>
-        <p class="text-muted">{{ texts.e1_introduction_m2_description }}</p>
-        <p class="text-muted">{{ texts.e1_introduction_m3_description }}</p>
-        <p class="text-muted">{{ texts.e1_introduction_m4_description }}</p>
+        <p class="text-muted">
+            <b>1. Statistical Parity Difference</b>: Computed as the difference of the rate of favorable outcomes received by the unprivileged group to the privileged group. The ideal value is 0, the acceptable range is -0.1 to 1.<br>
+            <b>2. Equal Opportunity Difference</b>: The difference of true positive rates between the unprivileged and the privileged groups. The ideal value is 0, the acceptable range is -0.1 to 1.<br>
+            <b>3. Average Odds Difference</b>: Computed as average difference of false positive rate (false positives / negatives) and true positive rate (true positives / positives) between unprivileged and privileged groups. The ideal value is 0, the acceptable range is -0.1 to 1.<br>
+            <b>4. Disparate Impact</b>: Computed as average difference of false positive rate (false positives / negatives) and true positive rate (true positives / positives) between unprivileged and privileged groups. The ideal value is 1, the acceptable range is 0.8 to 1.25.
+        </p>
         <h3>{{ texts.e1_dataset1 }}</h3>
         <div class="sub_experiment">
             <div class="inline-headers">

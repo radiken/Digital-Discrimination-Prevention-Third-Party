@@ -26,7 +26,7 @@ def get_statlog_avg_age(count = None, new_entry_age = None):
         count = Statlog.objects.count()
         avg_query = "SELECT AVG(age) FROM experiments_statlog"
     else:
-        avg_query = f"SELECT AVG(experiments_statlog.age) FROM (SELECT experiments_statlog.age from experiments_statlog LIMIT {count}) experiments_statlog"
+        avg_query = "SELECT AVG(experiments_statlog.age) FROM (SELECT experiments_statlog.age from experiments_statlog LIMIT "+str(count)+") experiments_statlog"
     original_result = get_query_result(avg_query)
     if new_entry_age:
         original_result = ((original_result*count)+new_entry_age)/(count+1)
@@ -132,7 +132,7 @@ def experiments_view(request, *args, **kwargs):
                                         The discrimination experiments aims to prove that imposing restrictions on the inputs indeed helps to reduce or prevent discrimination. To achieve so, four metrics are used to measure the discrimination level of a algorithm (More information about the metrics refers to: https://aif360.mybluemix.net/).''',
         'e1_introduction_m1_description': "1. Statistical Parity Difference: Computed as the difference of the rate of favorable outcomes received by the unprivileged group to the privileged group. The ideal value is 0, the acceptable range is -0.1 to 1.",
         'e1_introduction_m2_description': "2. Equal Opportunity Difference: The difference of true positive rates between the unprivileged and the privileged groups. The ideal value is 0, the acceptable range is -0.1 to 1.",
-        'e1_introduction_m3_description': "3. Computed as average difference of false positive rate (false positives / negatives) and true positive rate (true positives / positives) between unprivileged and privileged groups. The ideal value is 0, the acceptable range is -0.1 to 1.",
+        'e1_introduction_m3_description': "3. Average Odds Difference: Computed as average difference of false positive rate (false positives / negatives) and true positive rate (true positives / positives) between unprivileged and privileged groups. The ideal value is 0, the acceptable range is -0.1 to 1.",
         'e1_introduction_m4_description': "4. Disparate Impact: Computed as average difference of false positive rate (false positives / negatives) and true positive rate (true positives / positives) between unprivileged and privileged groups. The ideal value is 1, the acceptable range is 0.8 to 1.25.",
         'e1_dataset1' : "Statlog (German Credit Data) Data Set",
         'e1_d1_description': "This experiment compares an original machine learning that use all the information of the German Credit Data Set as input and a processed model that removes age, personal status and sex to protect these two sensitive attributes.",
