@@ -2,12 +2,12 @@
 {% load static %} 
 {% block content %}
 <div class="container" style="width: 900px;">
-    <br>
-    <h1>{{ texts.title }}</h1>
-    <br>
-    <p>{{ texts.description }}</p>
-    <p>You can check how the algorithm that the organization use performs through <a href="verification">the algorithm status</a>.</p>
-    <br>
+    <div class="title">
+        <h1>{{ texts.title }}</h1>
+        <br>
+        <p class="text-muted">{{ texts.description }}</p>
+        <p>You can check how the algorithm that the organization use performs through <a href="verification">the algorithm status</a>.</p>
+    </div>
     <form method="POST" action="index"> {% csrf_token %}
         {{form.as_p}}
         <input type="hidden" value="{{accept_return}}" name="accept_return"/>

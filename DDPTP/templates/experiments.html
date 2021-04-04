@@ -8,13 +8,21 @@
 <div class="container">
     <div class="title">
         <h1>Experiments</h1>
+        <p>Here shows experiments that proves the effectiveness of the model. Discrimination and privacy are two main concerns of the model, therefore, both of the aspects are tested.</p>
     </div>
     <div id="e1">
         <h2>{{ texts.e1_title }}</h2>
         <p>{{ texts.e1_description }}</p>
+        <h3>Introduction</h3>
+        <p>{{ texts.e1_introduction_description }}</p>
+        <p class="text-muted">{{ texts.e1_introduction_m1_description }}</p>
+        <p class="text-muted">{{ texts.e1_introduction_m2_description }}</p>
+        <p class="text-muted">{{ texts.e1_introduction_m3_description }}</p>
+        <p class="text-muted">{{ texts.e1_introduction_m4_description }}</p>
+        <h3>{{ texts.e1_dataset1 }}</h3>
         <div class="sub_experiment">
             <div class="inline-headers">
-                <b>{{ texts.e1_dataset1 }}</b> 
+                <span>{{ texts.e1_d1_description }}</span>
                 <input class="d-inline" type="button" id="run_e1_d1" name="run_e1_d1" value="Run" />
             </div>
             <div id="e1_d1_result" style="display: none;">
@@ -156,11 +164,12 @@
         </div>
         <br>
         <div class="sub_experiment">
+            <h3>{{ texts.e1_dataset2 }}</h3>
             <div class="inline-headers">
-                <b>{{ texts.e1_dataset2 }}</b> 
+                <p>{{ texts.e1_d2_description }}</p> 
                 <input class="d-inline" type="button" id="run_e1_d2" name="run_e1_d2" value="Run" />
             </div>
-            <div id="e1_d2_result" style="display: none;">
+            <div id="e1_d2_result" style="display: none; margin-top: 20px;">
                 <h5>Result</h5>
                 <div id="e1_d2_result_metrics">
                     <b>Scores:</b>
@@ -198,9 +207,9 @@
                 </div>
             </div>
             <div id="e1_d2_improvement" style="display: none;">
-                <b>Improvement</b>
-                <input class="d-inline" type="button" id="run_e1_d2_improvement" name="run_e1_d2_improvement" value="Run" />
+                <h4>Improvement</h4>
                 <p>{{ texts.e1_d2_improvement_description }}</p>
+                <input class="d-inline" type="button" id="run_e1_d2_improvement" name="run_e1_d2_improvement" value="Run" />
                 <div id="e1_d2_improvement_result" style="display: none;">
                     <div id="e1_d2_improvement_result_chart">
                         <canvas id="e1_d2_improvement_result_canvas"></canvas>
@@ -209,7 +218,7 @@
                 <div id="e1_d2_improved" style="display: none;">
                     <p>{{ texts.e1_d2_improvement_description2 }}</p>
                     <input class="d-inline" type="button" id="run_e1_d2_improved" name="run_e1_d2_improved" value="Run" />
-                    <div id="e1_d2_improved_result" style="display: none;">
+                    <div id="e1_d2_improved_result" style="display: none; margin-top: 30px;">
                         <h5>Result</h5>
                         <div id="e1_d2_improved_result_metrics">
                             <b>Scores:</b>
@@ -254,7 +263,7 @@
     <div id="e2">
         <h2>{{ texts.e2_title }}</h2>
         <p>{{ texts.e2_description }}</p>
-        <h3>{{ texts.e2_charts_title }}</h3>
+        <h3>Introduction</h3>
         <p>{{ texts.e2_charts_description }}</p>
         <div class="row">
             <figure class="col-md-5">
