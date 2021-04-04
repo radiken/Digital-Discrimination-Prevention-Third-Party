@@ -52,39 +52,6 @@ def simulate_new_entry_guess_n_times(n, real_result, epsilon=1):
             correct_count = correct_count + 1
     return correct_count/n
 
-'''
-Experiment 3: Verification experiment
-try to see if we can verify the fairness of the decision-making algorithms
-By looking at the distribution of the sensitive information in the returned classifications
-'''
-def get_adult_models_sensitive_rates_from_experiments():
-    test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country")
-    original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates, abstracted_zero_rates, abstracted_one_rates = get_adult_models_sensitive_rates(test_x)
-    rates_list = [original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates, abstracted_zero_rates, abstracted_one_rates]
-    for rates in rates_list:
-        for key, value in rates.items():
-            value_string = ""
-            for attribute, rate in value.items():
-                if(rate!=0):
-                    value_string = value_string+attribute+": "+str(rate)+"\n"
-            rates[key] = value_string
-    return rates_list
-
-def get_statlog_models_sensitive_rates_from_experiments():
-    x = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
-        "guarantors", "present_residence_since", "property", "age", "other_installment_plans", "housing", "existing_credits", "job", "maintenance_provider_number", "telephone", "foreign_worker")
-    y = Statlog.objects.values_list("result")
-    original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates = get_statlog_models_sensitive_rates(x, y)
-    rates_list = [original_zero_rates, original_one_rates, processed_zero_rates, processed_one_rates]
-    rates_list_string = []
-    for rates in rates_list:
-        rates_string = ""
-        for attribute, rate in rates.items():
-            rates_string = rates_string+attribute+": "+str(rate)+", "
-        rates_list_string.append(rates_string)
-    return rates_list_string
-
-
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
         if request.POST.get("action")=="run_e1_d1":

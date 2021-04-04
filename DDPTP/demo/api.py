@@ -50,8 +50,11 @@ def get_query_result(query):
 
 # A demo of making queries through python code
 def query_demo():
-    query = "SELECT AVG(age) FROM experiments_statlog"
     import urllib.parse
+    import urllib.request
+    query = "SELECT AVG(age) FROM experiments_statlog"
     encoded_query = urllib.parse.quote_plus(query)
     url = "thediscriminationfreemodel.uk/demo/api/result?query="+encoded_query
-    # TODO: Test after deployment 
+    webURL = urllib.request.urlopen(url)
+    result = webURL.read()
+    print(result)

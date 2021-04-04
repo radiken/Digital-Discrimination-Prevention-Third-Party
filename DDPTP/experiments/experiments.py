@@ -22,11 +22,12 @@ adult_test_x = Adult_test.objects.values_list("age", "workclass", "fnlwgt", "edu
 adult_test_y = Adult_test.objects.values_list("income")
 adult_train_x = pd.DataFrame(list(adult_train_x))
 adult_test_x = pd.DataFrame(list(adult_test_x))
-imp = SimpleImputer(missing_values="?", strategy="most_frequent")
-adult_train_x = pd.DataFrame(imp.fit_transform(adult_train_x))
-adult_test_x = pd.DataFrame(imp.fit_transform(adult_test_x))
-adult_train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
-adult_test_x.columns = ["age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country"]
+if(len(adult_train_x)>0 and len(adult_test_x)>0):
+    imp = SimpleImputer(missing_values="?", strategy="most_frequent")
+    adult_train_x = pd.DataFrame(imp.fit_transform(adult_train_x))
+    adult_test_x = pd.DataFrame(imp.fit_transform(adult_test_x))
+    adult_train_x.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country']
+    adult_test_x.columns = ["age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country"]
 
 '''
 Experiment 1
