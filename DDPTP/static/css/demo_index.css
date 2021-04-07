@@ -1,14 +1,14 @@
 .card{
-    height: 265px;
+    min-height: 265px;
     animation: fadein 1.2s;
 }
 
 #step4{
-    height: 300px;
+    min-height: 350px;
 }
 
 #step5{
-    height: 300px;
+    min-height: 350px;
 }
 
 .step{
