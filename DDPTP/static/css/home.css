@@ -23,3 +23,7 @@
 .icon {
     min-height: 120px;
 }
+
+.card {
+    min-height: 210px;
+}

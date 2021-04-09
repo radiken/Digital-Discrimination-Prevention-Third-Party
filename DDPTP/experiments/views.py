@@ -3,54 +3,8 @@ import experiments.experiments
 from .experiments import *
 from .models import Adult_test
 from .models import Statlog
-from django.db import connection
 from django.http import HttpResponse
-from DP_library import laplace
 import json
-
-'''
-Experiment 2: differential privacy performance experiment
-Test the performance of differential privacy with the above two datasets
-Execute different type of queries and show the returned result and the real value
-'''
-
-def get_query_result(query):
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        result = cursor.fetchone()
-    return float(result[0])
-
-def get_statlog_avg_age(count = None, new_entry_age = None):
-    # in the german dataset, simulate the queries for age
-    if not count:
-        count = Statlog.objects.count()
-        avg_query = "SELECT AVG(age) FROM experiments_statlog"
-    else:
-        avg_query = "SELECT AVG(experiments_statlog.age) FROM (SELECT experiments_statlog.age from experiments_statlog LIMIT "+str(count)+") experiments_statlog"
-    original_result = get_query_result(avg_query)
-    if new_entry_age:
-        original_result = ((original_result*count)+new_entry_age)/(count+1)
-        count = count+1
-    dp_result = get_dp_result(original_result)
-    return count, original_result, dp_result
-
-def get_statlog_single_male_count(new_entry = None):
-    # single male corespond to A93 in the data set
-    single_male_query = "SELECT COUNT(*) FROM experiments_statlog WHERE personal_status_and_sex='A93'"
-    original_result = get_query_result(single_male_query)
-    if new_entry==1:
-        original_result = original_result + 1
-    dp_result = get_dp_result(original_result)
-    return original_result, dp_result
-
-def simulate_new_entry_guess_n_times(n, real_result, epsilon=1):
-    correct_count = 0
-    new_result = real_result+1
-    for _ in range(n):
-        new_dp_result = get_dp_result(new_result, epsilon=epsilon)
-        if new_dp_result > real_result:
-            correct_count = correct_count + 1
-    return correct_count/n
 
 def run_experiments(request, *args, **kwargs):
     if request.method == 'POST':
@@ -69,8 +23,9 @@ def run_experiments(request, *args, **kwargs):
             correlations = correlations.to_json(orient="split")
             ctx = {'correlations': correlations}
         elif request.POST.get("action")=="run_e1_d2_improved":
-            occupation_abstract = {"group_1": ["Adm-clerical", "Craft-repair"]}
-            actions = {"marital_status": "remove", "race": "remove", "sex": "remove", "occupation": occupation_abstract, "relationship": "remove"}
+            occupation_abstract = {"group_1": ["Adm-clerical", "Craft-repair", "Other-service"]}
+            relationship_abstract = {"group_1": ["Husband", "Wife", "Unmarried"]}
+            actions = {"marital_status": "remove", "race": "remove", "sex": "remove", "hours_per_week": "remove", "occupation": occupation_abstract, "relationship": relationship_abstract}
             metrics = adult_prediction(actions)
             ctx = {'metrics': metrics}
         elif request.POST.get("action")=="run_e1_d2_customize":
@@ -140,7 +95,8 @@ def experiments_view(request, *args, **kwargs):
         'e1_d2_description': '''This experiment compares an original machine learning that use all the information of the Adult Data Set as input and a processed model that removes marital status, race, sex, native country and abstracts abstract age (young age:<=35, middle age: 36-55, older age: >=56) and relationship (husband: husband-or-wife, wife: husband-or-wife).
                              The sensitive attributes are sex and race. But in order to protect sex and race, the processed model processes other attributes that are potential sensitive attributes, from which sex and race could potentially be inferred by the algorithm. At this step the proxy variables are selected manually.''',
         'e1_d2_improvement_description': "The the processed model does not seems to be effective. In this situation, the model will calculate the correlations among the sensitive values and other attributes according to the existing data to seek better solutions.",
-        'e1_d2_improvement_description2': "From the correlations, we observe the followings. Except for 'husband' and 'wife', other relationship attributes shows high corraltions as well, therefore, it is better to be removed. Two occupation values have over 0.2 correlations, abstract these two values to a group may also help. The correlation between the sensitive attributes and age is not high, therefore it is not necessary to abstract age. Make changes accordingly and run again:",
+        'e1_d2_improvement_description2': '''From the correlations, we observe the followings. Except for 'Husband' and 'Wife', 'Unmarried' shows high corraltions as well, therefore, 'Unmarried', 'Husband' and 'Wife' are merged to one group. Three occupation values are in top 10 correlations, abstract these three values to a group may also help. 
+                                             The correlation between the sensitive attributes and age is not high, therefore it is not necessary to abstract age. hours-per-week is removed instead. Make changes accordingly and run again:''',
         'e1_d2_customize_description': "Remove or abstract any attributes you want. \nAt the moment, you can abstract continuous attribute to 2 groups and discrete attribute to 3 groups.",
         'e1_d2_customize_s3_description': "Note: The decision tree classifier involves randomness, result may be different each time.",
         'e2_title': "Privacy Experiments",
@@ -152,13 +108,13 @@ def experiments_view(request, *args, **kwargs):
                                 moreover, it is sufficient and easier to control beta only through epsilon. Therefore, in this app, noise level equals to 1/epsilon. Thereby the chart on the right can be drawn showing the relationship between epsilon (the x axis) and noise level (the y axis).
                                 This application considers epsilon=0.5, noise level=2 as the largest acceptable noise level.  ''',
         'e2_t1_title': "Test 1: Single query privacy level test",
-        'e2_t1_subtitle1': "a). continuous return queries in a large data set",
+        'e2_t1_subtitle1': "a). Continuous return queries in a large data set",
         'e2_t1_description': "While providing an API to access certain level of the sensitive information, it is vital to ensure the result of the queries have high enough privacy level against differential attack.",
         'e2_t1_q1_description': "In the Statlog (German Credit Data) Data Set, we regard age as a sensitive information. Suppose the organization queries the average age.",
         'e2_t1_q2_description': "Now suppose there is a new entry of age 25, query the value again.",
         'e2_t1_description2': "Without differential privacy, the age of the new entry can be easily computed using the real values:",
         'e2_t1_description3': "Compute this with the processed values again:",
-        'e2_t1_subtitle2': "b). continuous return queries in a small data set",
+        'e2_t1_subtitle2': "b). Continuous return queries in a small data set",
         'e2_t1_q3_description': "Differential privacy works well with data set of 1000 entries, now consider a smaller data set. Only take the first 10 entries of the Statlog (German Credit Data) Data Set:",
         'e2_t1_q4_description': "add 11th entry with age 25 and run the query again:",
         'e2_t1_subtitle3': "c). \"How many\" queries:",

@@ -1,6 +1,5 @@
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
-from sklearn.svm import SVC
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -11,6 +10,7 @@ import numpy as np
 from .models import Adult_original
 from .models import Adult_test
 from .models import Statlog
+from django.db import connection
 
 # To increase efficiency, prepare some data while initializing
 statlog_data = Statlog.objects.values_list("account_status", "duration", "credit_history", "purpose", "credit_amount", "savings_account", "present_employment_since", "installment_rate_in_income", "personal_status_and_sex", 
@@ -30,16 +30,14 @@ if(len(adult_train_x)>0 and len(adult_test_x)>0):
     adult_test_x.columns = ["age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country"]
 
 '''
-Experiment 1
-Test whether excluding the sensitive data affect the effectiveness of the decision making algorithm
-This experiment use supervised learning classifiers to predict the income of individuals
+Discrimination Experiment
+Test how excluding or abstracting the sensitive data affects the performance of the decision-making algorithm
 '''
 
-''' 
-param: 
-    classifier: a string of the machine learning classifier to use. Available choices: decision_tree, SVC, GaussianNB
-    actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': ['<10', ' in range(10, 50)', '>=50'], 'account_status':[["A11", "A12"], ["A13", "A14"]]}
-'''
+
+# param: 
+#   classifier: a string of the machine learning classifier to use. Available choices: decision_tree, SVC, GaussianNB
+#   actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': ['<10', ' in range(10, 50)', '>=50'], 'account_status':[["A11", "A12"], ["A13", "A14"]]}
 def customize_statlog_predition(classifier, actions):
     x = pd.DataFrame(statlog_data)
     y = statlog_result
@@ -99,6 +97,8 @@ def customize_statlog_predition(classifier, actions):
     return metrics
 
 
+# param: 
+#   actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': ['<10', ' in range(10, 50)', '>=50'], 'account_status':[["A11", "A12"], ["A13", "A14"]]}
 def adult_prediction(actions):
     # preprocess data
     train_x = adult_train_x.copy()
@@ -112,7 +112,7 @@ def adult_prediction(actions):
     test_y = le.fit_transform(adult_test_y)
     to_encode = ['workclass', 'education', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country']
     original_test_x = pd.get_dummies(test_x, columns=to_encode)
-    continuous_attributes = ["age", "fnlwgt", "education-num", "capital-gain", "capital-loss", "hours-per-week"]
+    continuous_attributes = ["age", "fnlwgt", "education_num", "capital_gain", "capital_loss", "hours_per_week"]
     for key in actions.keys():
         if key in continuous_attributes:
             to_encode.append(key)
@@ -240,12 +240,11 @@ def get_disparate_impact(privileged_df, unprivileged_df, privileged_group, unpri
     disparate_impact = unprivileged_rate / privileged_rate
     return disparate_impact
 
-''' 
-Process a training set by either remove it abstract the attributes according to the actions
-param: 
-    x: a dataframe of training data
-    actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': {'young_age': '<10', 'middle_age': ' in range(10, 50)', 'older_age': '>=50'}, 'account_status': {'husband-or-wife': ["A11", "A12"], ["A13", "A14"]}}
-'''
+
+# Process a training set by either remove it abstract the attributes according to the actions
+# param: 
+#   x: a dataframe of training data
+#   actions: a dictionary of what to remove or abstract. E.g. {'account_status': "remove", 'age': {'young_age': '<10', 'middle_age': ' in range(10, 50)', 'older_age': '>=50'}, 'account_status': {'husband-or-wife': ["A11", "A12"], ["A13", "A14"]}}
 def preprocess_data(x, actions):
     processed_x = x.copy()
     for attribute, action in actions.items():
@@ -295,10 +294,14 @@ def load_model_and_score(test_x, test_y, file_name):
     result = loaded_model.score(test_x, test_y)
     return result
 
+def load_model_and_predict(model_name, one_hot_test_x):
+    model = pickle.load(open(f'ml_models/{model_name}', 'rb'))
+    result = model.predict(one_hot_test_x)
+    return result
+
 '''
-Experiment 2
+Privacy Experiments 
 Test the performance of differential privacy
-Functions related to data querying are in view.py
 '''
 def get_dp_result(result, sensitivity=1, epsilon=1):
     return laplace(result, sensitivity=sensitivity, epsilon=epsilon)
@@ -315,21 +318,44 @@ def epsilon_and_noise_level_chart_figures():
     for epsilon in np.arange(0.1, 10.0, 0.1):
         figures.append([epsilon, 1/epsilon])
     return figures
-    
-def load_model_and_predict(model_name, one_hot_test_x):
-    model = pickle.load(open(f'ml_models/{model_name}', 'rb'))
-    result = model.predict(one_hot_test_x)
-    return result
 
-def get_model_prediction_attribute_distribution(test_x, prediction, attribute):
-    test_x['result'] = prediction
-    zero_df = test_x.loc[test_x['result'] == 0, :]
-    one_df = test_x.loc[test_x['result'] == 1, :]
-    zero_rates = zero_df[attribute].value_counts(normalize=True)
-    zero_rates = zero_rates.round(2)
-    one_rates = one_df[attribute].value_counts(normalize=True)
-    one_rates = one_rates.round(2)
-    return zero_rates, one_rates
+def get_query_result(query):
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchone()
+    return float(result[0])
+
+def get_statlog_avg_age(count = None, new_entry_age = None):
+    # in the german dataset, simulate the queries for age
+    if not count:
+        count = Statlog.objects.count()
+        avg_query = "SELECT AVG(age) FROM experiments_statlog"
+    else:
+        avg_query = "SELECT AVG(experiments_statlog.age) FROM (SELECT experiments_statlog.age from experiments_statlog LIMIT "+str(count)+") experiments_statlog"
+    original_result = get_query_result(avg_query)
+    if new_entry_age:
+        original_result = ((original_result*count)+new_entry_age)/(count+1)
+        count = count+1
+    dp_result = get_dp_result(original_result)
+    return count, original_result, dp_result
+
+def get_statlog_single_male_count(new_entry = None):
+    # single male corespond to A93 in the data set
+    single_male_query = "SELECT COUNT(*) FROM experiments_statlog WHERE personal_status_and_sex='A93'"
+    original_result = get_query_result(single_male_query)
+    if new_entry==1:
+        original_result = original_result + 1
+    dp_result = get_dp_result(original_result)
+    return original_result, dp_result
+
+def simulate_new_entry_guess_n_times(n, real_result, epsilon=1):
+    correct_count = 0
+    new_result = real_result+1
+    for _ in range(n):
+        new_dp_result = get_dp_result(new_result, epsilon=epsilon)
+        if new_dp_result > real_result:
+            correct_count = correct_count + 1
+    return correct_count/n
 
 # ---------------- functions to create models ---------------------
 

@@ -54,7 +54,7 @@ def query_demo():
     import urllib.request
     query = "SELECT AVG(age) FROM experiments_statlog"
     encoded_query = urllib.parse.quote_plus(query)
-    url = "thediscriminationfreemodel.uk/demo/api/result?query="+encoded_query
+    url = "http://thediscriminationfreemodel.uk/demo/api/result?query="+encoded_query
     webURL = urllib.request.urlopen(url)
-    result = webURL.read()
+    result = float(webURL.read())
     print(result)

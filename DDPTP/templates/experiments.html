@@ -8,7 +8,10 @@
 <div class="container">
     <div class="title">
         <h1>Experiments</h1>
-        <p>Here shows experiments that proves the effectiveness of the model. Discrimination and privacy are two main concerns of the model, therefore, both of the aspects are tested.</p>
+        <p>
+            Here shows experiments that proves the effectiveness of the model. Discrimination and privacy are two main concerns of the model, therefore, both of the aspects are tested.<br>
+            <b>Notice that randomness involves in most of the experiments, results may be different each time.</b> 
+        </p>
     </div>
     <div id="e1">
         <h2>{{ texts.e1_title }}</h2>
@@ -168,7 +171,7 @@
         <div class="sub_experiment">
             <h3>{{ texts.e1_dataset2 }}</h3>
             <div class="inline-headers">
-                <p>{{ texts.e1_d2_description }}</p> 
+                <p>{{ texts.e1_d2_description }} (Takes about 30 seconds to run)</p> 
                 <input class="d-inline" type="button" id="run_e1_d2" name="run_e1_d2" value="Run" />
             </div>
             <div id="e1_d2_result" style="display: none; margin-top: 20px;">
@@ -240,7 +243,7 @@
                                     <canvas id="e1_d2_improved_result_sex_disparate_impact"></canvas>
                                 </div>
                             </div>
-                            <b>Metrics of age:</b>
+                            <b>Metrics of race:</b>
                             <div id="e1_d2_improved_result_age" class="row">
                                 <div class="col-3 chart">
                                     <canvas id="e1_d2_improved_result_age_statistical_parity_difference"></canvas>

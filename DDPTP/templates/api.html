@@ -8,10 +8,10 @@
     </div>
     <p>
         <h5>Rules</h5> 
-        1. Queries must be select queries from the given table only.<br>
+        1. Queries must be SELECT queries from the given table only.<br>
         2. Queries must be on the whole data set, i.e. keyword "LIMIT" is not allowed.<br>
-        3. Queries must return a numeric result that is a statistical information, i.e. queries should contain functions like COUNT(), AVG(), SUM(), STDDEV(), VARIANCE().<br>
-        4. "WHERE" conditions are allowed, but queries only returns a result when the sample set has more than 10 entries.<br>
+        3. Queries must return a numeric result that is statistical information, i.e. queries should contain functions like COUNT(), AVG(), SUM(), STDDEV(), VARIANCE().<br>
+        4. "WHERE" conditions are allowed, but queries only return a result when the sample set has more than 10 entries.<br>
         5. Query results are processed by the Laplace mechanism of differential privacy. COUNT() queries will be processed with epsilon 0.5, other queries will be processed with epsilon 1.0. 
     </p>
     <p>
@@ -32,6 +32,18 @@
         <h5>Examples</h5>
         Querying the average age: <br>SELECT AVG(age) FROM experiments_statlog <br><br>
         Querying the number of people with over 200DM in their account (A13) and make a loan to buy new car (A40): <br>SELECT COUNT(*) FROM experiments_statlog WHERE account_status="A13" and purpose="A40"
+    </div>
+    <div class="mt-5">
+        <h5>Make queries with Python</h5>
+        Below shows a sample code of making queries with Python. <br><br>
+        import urllib.parse<br>
+        import urllib.request<br>
+        query = "SELECT AVG(age) FROM experiments_statlog"<br>
+        encoded_query = urllib.parse.quote_plus(query)<br>
+        url = "http://thediscriminationfreemodel.uk/demo/api/result?query="+encoded_query<br>
+        webURL = urllib.request.urlopen(url)<br>
+        result = float(webURL.read())<br>
+        print(result)<br>
     </div>
 </div>
 {% endblock %}
