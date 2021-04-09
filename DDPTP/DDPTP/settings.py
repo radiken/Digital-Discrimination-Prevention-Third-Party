@@ -80,8 +80,8 @@ DATABASES = {
         'NAME': 'DDPTP', 
         'HOST': '144.202.4.81', 
         'PORT': 3306, 
-        'USER': 'alan',  
-        'PASSWORD': 'Ykllcyy140224.',
+        'USER': 'examiner',  
+        'PASSWORD': '8V<=T,A<fU',
     }  
 }
 
